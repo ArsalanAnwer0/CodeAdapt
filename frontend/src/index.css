@@ -9,18 +9,32 @@
   --bg-secondary: #f6f8fa;
   --bg-tertiary: #eaeef2;
   --bg-elevated: #ffffff;
+  --bg-hover: #f3f4f6;
   --border-primary: #d0d7de;
   --border-secondary: #e1e4e8;
+  --border-focus: #0969da;
   --text-primary: #1f2328;
   --text-secondary: #59636e;
   --text-tertiary: #656d76;
   --text-quaternary: #8c959f;
   --accent-blue: #0969da;
+  --accent-blue-hover: #0860ca;
   --accent-purple: #8250df;
   --accent-orange: #bc4c00;
   --accent-amber: #bf8700;
   --accent-severe: #cf222e;
   --accent-done: #0969da;
+  --accent-green: #1a7f37;
+  --shadow-sm: 0 1px 2px rgba(31, 35, 40, 0.04);
+  --shadow-md: 0 3px 6px rgba(31, 35, 40, 0.06), 0 1px 3px rgba(31, 35, 40, 0.04);
+  --shadow-lg: 0 8px 24px rgba(31, 35, 40, 0.08), 0 2px 6px rgba(31, 35, 40, 0.04);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 *, *::before, *::after {
@@ -40,17 +54,36 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+/* Selection */
+::selection {
+  background: rgba(9, 105, 218, 0.15);
+  color: var(--text-primary);
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-primary); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-quaternary); border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 3px;
+  transition: background var(--transition-fast);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-quaternary); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-primary) transparent;
+}
 
 /* Monaco light theme overrides */
 .monaco-editor, .monaco-editor .margin { background-color: var(--bg-primary) !important; }
 .monaco-editor .scroll-decoration { display: none !important; }
+.monaco-editor .cursor { transition: none !important; }
 
 /* Animations */
 @keyframes fadeIn {
@@ -61,6 +94,21 @@ body {
 @keyframes fadeInSlow {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes messageSlide {
@@ -74,16 +122,30 @@ body {
 }
 
 @keyframes injectGlow {
-  0% { box-shadow: 0 0 0 0 rgba(188, 76, 0, 0.2); }
-  70% { box-shadow: 0 0 0 6px rgba(188, 76, 0, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(188, 76, 0, 0.25); }
+  50% { box-shadow: 0 0 0 4px rgba(188, 76, 0, 0.08); }
   100% { box-shadow: 0 0 0 0 rgba(188, 76, 0, 0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 .animate-fade-in { animation: fadeIn 0.4s ease-out both; }
 .animate-fade-in-slow { animation: fadeInSlow 0.6s ease-out both; }
+.animate-slide-down { animation: slideDown 0.3s ease-out both; }
+.animate-slide-up { animation: slideUp 0.4s ease-out both; }
+.animate-scale-in { animation: scaleIn 0.3s ease-out both; }
 .animate-message { animation: messageSlide 0.2s ease-out; }
 .animate-pulse { animation: pulse 2s ease-in-out infinite; }
 .animate-inject-glow { animation: injectGlow 0.6s ease-out; }
+.animate-breathe { animation: breathe 3s ease-in-out infinite; }
 
 .gradient-text {
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
@@ -92,7 +154,21 @@ body {
   background-clip: text;
 }
 
-/* Placeholder color for textareas */
-textarea::placeholder {
+/* Placeholder color for textareas and inputs */
+textarea::placeholder,
+input::placeholder {
   color: var(--text-quaternary);
+  opacity: 0.8;
+}
+
+/* Smooth transitions for interactive elements */
+button, a, input, textarea, select {
+  transition: all var(--transition-fast);
+}
+
+/* Focus visible ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
