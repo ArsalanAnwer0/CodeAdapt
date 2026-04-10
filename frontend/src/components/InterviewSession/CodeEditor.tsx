@@ -54,22 +54,22 @@ export default function CodeEditor({ language, problem, code, onCodeChange, onRu
   return (
     <div className="flex flex-col h-full" style={{ background: 'var(--bg-primary)' }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 h-10 flex-shrink-0" style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-secondary)' }}>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-secondary)' }}>
+      <div className="flex items-center gap-2.5 px-3 h-10 flex-shrink-0" style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-secondary)' }}>
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-secondary)', boxShadow: '0 1px 2px rgba(31,35,40,0.03)' }}>
           <FileCode className="w-3 h-3" style={{ color: 'var(--accent-blue)' }} />
           <span className="font-mono text-[11px] font-medium" style={{ color: 'var(--text-secondary)' }}>{getFileName(language)}</span>
         </div>
-        <span className="text-[10px] font-mono uppercase" style={{ color: 'var(--text-quaternary)' }}>{language}</span>
+        <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: 'var(--text-quaternary)' }}>{language}</span>
 
         <div className="flex-1" />
 
-        <button onClick={handleReset} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors duration-150"
+        <button onClick={handleReset} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 hover:bg-[var(--bg-tertiary)] active:scale-[0.97]"
           style={{ color: 'var(--text-tertiary)', border: '1px solid var(--border-secondary)' }}>
           <RotateCcw className="w-3 h-3" /> Reset
         </button>
         <button onClick={handleRun} disabled={running}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-semibold text-white transition-all duration-150 disabled:opacity-50"
-          style={{ background: 'var(--accent-blue)' }}>
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all duration-200 disabled:opacity-50 active:scale-[0.97]"
+          style={{ background: 'linear-gradient(135deg, var(--accent-blue), #0550ae)', boxShadow: '0 1px 3px rgba(9,105,218,0.25)' }}>
           {running ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3 fill-current" />}
           {running ? 'Running...' : 'Run Code'}
         </button>
