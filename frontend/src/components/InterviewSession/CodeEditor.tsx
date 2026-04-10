@@ -95,46 +95,47 @@ export default function CodeEditor({ language, problem, code, onCodeChange, onRu
       {/* Console */}
       <div className="flex-shrink-0" style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-secondary)' }}>
         <button onClick={() => setConsoleOpen(!consoleOpen)}
-          className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-medium transition-colors duration-150"
+          className="w-full flex items-center gap-2 px-3 py-2.5 text-[11px] font-semibold transition-colors duration-200 hover:bg-[var(--bg-tertiary)]"
           style={{ color: 'var(--text-tertiary)' }}>
           <Terminal className="w-3 h-3" /> Output
           {testResults && (
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold" style={{
-              background: passCount === testResults.length ? 'rgba(9,105,218,0.1)' : 'rgba(188,76,0,0.1)',
-              color: passCount === testResults.length ? 'var(--accent-blue)' : 'var(--accent-orange)',
-            }}>{passCount}/{testResults.length}</span>
+            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold" style={{
+              background: passCount === testResults.length ? 'rgba(26,127,55,0.08)' : 'rgba(188,76,0,0.08)',
+              color: passCount === testResults.length ? 'var(--accent-green)' : 'var(--accent-orange)',
+              border: `1px solid ${passCount === testResults.length ? 'rgba(26,127,55,0.15)' : 'rgba(188,76,0,0.15)'}`,
+            }}>{passCount}/{testResults.length} passed</span>
           )}
           <span className="ml-auto">{consoleOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}</span>
         </button>
         {consoleOpen && (
-          <div className="px-3 pb-3 max-h-[160px] overflow-y-auto">
+          <div className="px-3 pb-3 max-h-[180px] overflow-y-auto">
             {running ? (
-              <div className="flex items-center gap-2 py-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                <Loader2 className="w-3 h-3 animate-spin" /> Running test cases...
+              <div className="flex items-center gap-2 py-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: 'var(--accent-blue)' }} /> Running test cases...
               </div>
             ) : testResults ? (
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 {testResults.map((tc, i) => (
-                  <div key={i} className="rounded-md p-2 text-[11px]" style={{
-                    background: tc.passed ? 'rgba(9,105,218,0.04)' : 'rgba(188,76,0,0.04)',
-                    border: `1px solid ${tc.passed ? 'rgba(9,105,218,0.15)' : 'rgba(188,76,0,0.15)'}`,
+                  <div key={i} className="rounded-lg p-2.5 text-[11px]" style={{
+                    background: tc.passed ? 'rgba(26,127,55,0.03)' : 'rgba(188,76,0,0.03)',
+                    border: `1px solid ${tc.passed ? 'rgba(26,127,55,0.12)' : 'rgba(188,76,0,0.12)'}`,
                   }}>
-                    <div className="flex items-center gap-1.5 mb-1">
-                      {tc.passed ? <Check className="w-3 h-3" style={{ color: 'var(--accent-blue)' }} /> : <X className="w-3 h-3" style={{ color: 'var(--accent-orange)' }} />}
-                      <span style={{ color: tc.passed ? 'var(--accent-blue)' : 'var(--accent-orange)', fontWeight: 600 }}>
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      {tc.passed ? <Check className="w-3.5 h-3.5" style={{ color: 'var(--accent-green)' }} /> : <X className="w-3.5 h-3.5" style={{ color: 'var(--accent-orange)' }} />}
+                      <span style={{ color: tc.passed ? 'var(--accent-green)' : 'var(--accent-orange)', fontWeight: 600 }}>
                         Test {i + 1} — {tc.passed ? 'Passed' : 'Failed'}
                       </span>
                     </div>
-                    <div className="font-mono text-[10px] space-y-0.5 ml-[18px]" style={{ color: 'var(--text-tertiary)' }}>
+                    <div className="font-mono text-[10px] space-y-1 ml-5" style={{ color: 'var(--text-tertiary)' }}>
                       <div>Input: <span style={{ color: 'var(--text-secondary)' }}>{tc.input}</span></div>
-                      <div>Expected: <span style={{ color: 'var(--accent-blue)', opacity: 0.7 }}>{tc.expectedOutput}</span></div>
-                      {!tc.passed && tc.actualOutput && <div>Got: <span style={{ color: 'var(--accent-orange)', opacity: 0.7 }}>{tc.actualOutput}</span></div>}
+                      <div>Expected: <span style={{ color: 'var(--accent-blue)' }}>{tc.expectedOutput}</span></div>
+                      {!tc.passed && tc.actualOutput && <div>Got: <span style={{ color: 'var(--accent-orange)' }}>{tc.actualOutput}</span></div>}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-[11px] py-1" style={{ color: 'var(--text-quaternary)' }}>Run code to see results</p>
+              <p className="text-[11px] py-2" style={{ color: 'var(--text-quaternary)' }}>Run code to see results</p>
             )}
           </div>
         )}
