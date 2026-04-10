@@ -127,19 +127,23 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
 
             {/* Language */}
             <div className="mb-6">
-              <label className="block text-xs font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)' }}>Language</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)', letterSpacing: '0.08em' }}>Language</label>
               <div className="grid grid-cols-4 gap-2">
-                {LANGUAGES.map((lang) => (
-                  <button key={lang.id} onClick={() => setLanguage(lang.id)}
-                    className="flex flex-col items-center gap-1 py-3 px-2 rounded-lg transition-all duration-150"
-                    style={{
-                      background: language === lang.id ? 'rgba(9,105,218,0.08)' : 'var(--bg-secondary)',
-                      border: language === lang.id ? '2px solid var(--accent-blue)' : '1px solid var(--border-secondary)',
-                    }}>
-                    <span className="text-xs font-mono font-bold" style={{ color: language === lang.id ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.icon}</span>
-                    <span className="text-[10px] font-medium" style={{ color: language === lang.id ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.label}</span>
-                  </button>
-                ))}
+                {LANGUAGES.map((lang) => {
+                  const active = language === lang.id
+                  return (
+                    <button key={lang.id} onClick={() => setLanguage(lang.id)}
+                      className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg transition-all duration-200 hover:shadow-soft"
+                      style={{
+                        background: active ? 'rgba(9,105,218,0.07)' : 'var(--bg-secondary)',
+                        border: active ? '1.5px solid var(--accent-blue)' : '1px solid var(--border-secondary)',
+                        boxShadow: active ? '0 0 0 3px rgba(9,105,218,0.08)' : 'none',
+                      }}>
+                      <span className="text-xs font-mono font-bold transition-colors duration-200" style={{ color: active ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.icon}</span>
+                      <span className="text-[10px] font-medium transition-colors duration-200" style={{ color: active ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.label}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
