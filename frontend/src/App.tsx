@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import SetupPanel from './components/SetupPanel'
 import InterviewSession from './components/InterviewSession'
 import ResultsScreen from './components/ResultsScreen'
+import HistoryScreen from './components/HistoryScreen'
 import { SessionConfig, SessionResult } from './types'
 
-type AppState = 'setup' | 'interview' | 'results'
+type AppState = 'setup' | 'interview' | 'results' | 'history'
 
 function PageTransition({ children, state }: { children: React.ReactNode; state: string }) {
   const [mounted, setMounted] = useState(false)
@@ -56,7 +57,23 @@ export default function App() {
     if (appState === 'results' && sessionResult) {
       return <ResultsScreen result={sessionResult} onReset={handleReset} />
     }
-    return <SetupPanel onStart={handleStart} />
+    if (appState === 'history') {
+      return (
+        <HistoryScreen
+          onBack={() => setAppState('setup')}
+          onOpen={(stored) => {
+            setSessionResult(stored)
+            setAppState('results')
+          }}
+        />
+      )
+    }
+    return (
+      <SetupPanel
+        onStart={handleStart}
+        onViewHistory={() => setAppState('history')}
+      />
+    )
   }
 
   return (

@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { Zap, ChevronRight, Terminal, Brain, Timer, Sparkles } from 'lucide-react'
+import { Zap, ChevronRight, Terminal, Brain, Timer, Sparkles, History } from 'lucide-react'
 import { Language, Difficulty, Topic, SessionDuration, SessionConfig } from '../types'
 
 interface SetupPanelProps {
   onStart: (config: SessionConfig) => void
+  onViewHistory?: () => void
 }
 
 const LANGUAGES: { id: Language; label: string; icon: string }[] = [
@@ -37,7 +38,7 @@ const TOPICS: { id: Topic; label: string }[] = [
 
 const DURATIONS: SessionDuration[] = [15, 30, 45, 60]
 
-export default function SetupPanel({ onStart }: SetupPanelProps) {
+export default function SetupPanel({ onStart, onViewHistory }: SetupPanelProps) {
   const [language, setLanguage] = useState<Language>('javascript')
   const [difficulty, setDifficulty] = useState<Difficulty>('medium')
   const [topic, setTopic] = useState<Topic>('arrays')
@@ -75,6 +76,16 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
             </div>
             <span className="text-2xl font-bold text-white tracking-tight">CodeAdapt</span>
           </div>
+          {onViewHistory && (
+            <button
+              type="button"
+              onClick={onViewHistory}
+              className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-medium text-white/70 hover:text-white transition-colors"
+            >
+              <History className="w-3.5 h-3.5" />
+              View session history
+            </button>
+          )}
         </div>
 
         <div className="relative z-10 max-w-md">
