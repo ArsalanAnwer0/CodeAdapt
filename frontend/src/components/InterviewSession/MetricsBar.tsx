@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Brain, CheckCircle2, Zap, Timer, Clock } from 'lucide-react'
 import { SessionMetrics } from '../../types'
 
@@ -13,12 +13,12 @@ function formatTime(seconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-export default function MetricsBar({ metrics }: MetricsBarProps) {
+function MetricsBar({ metrics }: MetricsBarProps) {
   const isLowTime = metrics.timeRemaining <= 300
   const scoreColor = metrics.adaptabilityScore >= 70 ? 'var(--accent-blue)' : metrics.adaptabilityScore >= 40 ? 'var(--accent-amber)' : 'var(--accent-orange)'
 
   return (
-    <div className="flex-shrink-0 flex items-center h-10 px-2" style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--border-secondary)', boxShadow: '0 -1px 3px rgba(31,35,40,0.03)' }}>
+    <div className="flex-shrink-0 flex items-center h-10 px-2 glass" style={{ borderTop: '1px solid var(--border-secondary)', boxShadow: '0 -1px 3px rgba(1,4,9,0.08)' }}>
       {/* Adaptability */}
       <div className="flex items-center gap-1.5 px-3 text-[11px]">
         <Brain className="w-3.5 h-3.5" style={{ color: scoreColor }} />
@@ -68,3 +68,5 @@ export default function MetricsBar({ metrics }: MetricsBarProps) {
     </div>
   )
 }
+
+export default memo(MetricsBar)

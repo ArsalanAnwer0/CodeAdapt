@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, memo } from 'react'
 import { Activity, Zap, Bug, FileText } from 'lucide-react'
 import { Problem, Injection } from '../../types'
 
@@ -11,7 +11,7 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
-export default function ProblemPanel({ problem, injections }: ProblemPanelProps) {
+function ProblemPanel({ problem, injections }: ProblemPanelProps) {
   const injectionsEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -134,3 +134,8 @@ export default function ProblemPanel({ problem, injections }: ProblemPanelProps)
     </div>
   )
 }
+
+// Memoize — the interview loop re-renders on every tick, but the
+// problem description never changes and the injections list only
+// grows on explicit user actions.
+export default memo(ProblemPanel)
