@@ -149,19 +149,20 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
 
             {/* Difficulty */}
             <div className="mb-6">
-              <label className="block text-xs font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)' }}>Difficulty</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)', letterSpacing: '0.08em' }}>Difficulty</label>
               <div className="grid grid-cols-3 gap-2">
                 {DIFFICULTIES.map((diff) => {
                   const active = difficulty === diff.id
                   return (
                     <button key={diff.id} onClick={() => setDifficulty(diff.id)}
-                      className="flex flex-col items-center gap-0.5 py-3 rounded-lg transition-all duration-150"
+                      className="flex flex-col items-center gap-1 py-3.5 rounded-lg transition-all duration-200"
                       style={{
-                        background: active ? `${diffColors[diff.id]}12` : 'var(--bg-secondary)',
-                        border: active ? `2px solid ${diffColors[diff.id]}` : '1px solid var(--border-secondary)',
+                        background: active ? `${diffColors[diff.id]}10` : 'var(--bg-secondary)',
+                        border: active ? `1.5px solid ${diffColors[diff.id]}` : '1px solid var(--border-secondary)',
+                        boxShadow: active ? `0 0 0 3px ${diffColors[diff.id]}12` : 'none',
                       }}>
-                      <span className="text-sm font-semibold" style={{ color: active ? diffColors[diff.id] : 'var(--text-tertiary)' }}>{diff.label}</span>
-                      <span className="text-[10px]" style={{ color: 'var(--text-quaternary)' }}>{diff.desc}</span>
+                      <span className="text-sm font-semibold transition-colors duration-200" style={{ color: active ? diffColors[diff.id] : 'var(--text-tertiary)' }}>{diff.label}</span>
+                      <span className="text-[10px]" style={{ color: active ? `${diffColors[diff.id]}aa` : 'var(--text-quaternary)' }}>{diff.desc}</span>
                     </button>
                   )
                 })}
@@ -170,21 +171,25 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
 
             {/* Topic */}
             <div className="mb-6">
-              <label className="block text-xs font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)' }}>Topic</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)', letterSpacing: '0.08em' }}>Topic</label>
               <div className="grid grid-cols-2 gap-1.5">
-                {TOPICS.map((t) => (
-                  <button key={t.id} onClick={() => setTopic(t.id)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-md text-left transition-all duration-150"
-                    style={{
-                      background: topic === t.id ? 'rgba(130,80,223,0.08)' : 'transparent',
-                      border: topic === t.id ? '1px solid var(--accent-purple)' : '1px solid transparent',
-                    }}>
-                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{
-                      background: topic === t.id ? 'var(--accent-purple)' : 'var(--border-primary)',
-                    }} />
-                    <span className="text-xs font-medium" style={{ color: topic === t.id ? 'var(--accent-purple)' : 'var(--text-tertiary)' }}>{t.label}</span>
-                  </button>
-                ))}
+                {TOPICS.map((t) => {
+                  const active = topic === t.id
+                  return (
+                    <button key={t.id} onClick={() => setTopic(t.id)}
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all duration-200"
+                      style={{
+                        background: active ? 'rgba(130,80,223,0.06)' : 'transparent',
+                        border: active ? '1px solid rgba(130,80,223,0.3)' : '1px solid transparent',
+                      }}>
+                      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all duration-200" style={{
+                        background: active ? 'var(--accent-purple)' : 'var(--border-primary)',
+                        boxShadow: active ? '0 0 0 2px rgba(130,80,223,0.15)' : 'none',
+                      }} />
+                      <span className="text-xs font-medium transition-colors duration-200" style={{ color: active ? 'var(--accent-purple)' : 'var(--text-tertiary)' }}>{t.label}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
