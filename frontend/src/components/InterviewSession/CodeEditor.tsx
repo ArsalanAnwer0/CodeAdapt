@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react'
 import Editor from '@monaco-editor/react'
 import { Play, RotateCcw, ChevronDown, ChevronUp, Check, X, Terminal, Loader2, FileCode } from 'lucide-react'
 import { Language, Problem } from '../../types'
+import { useTheme } from '../../theme/ThemeProvider'
 
 interface CodeEditorProps {
   language: Language
@@ -33,6 +34,7 @@ function generateTestCases(problem: Problem, codeLength: number): TestCase[] {
 }
 
 export default function CodeEditor({ language, problem, code, onCodeChange, onRun }: CodeEditorProps) {
+  const { theme } = useTheme()
   const [consoleOpen, setConsoleOpen] = useState(false)
   const [running, setRunning] = useState(false)
   const [testResults, setTestResults] = useState<TestCase[] | null>(null)
@@ -78,7 +80,7 @@ export default function CodeEditor({ language, problem, code, onCodeChange, onRu
       {/* Editor */}
       <div className="flex-1 min-h-0">
         <Editor height="100%" language={getMonacoLanguage(language)} value={code}
-          onChange={(val) => onCodeChange(val || '')} theme="light"
+          onChange={(val) => onCodeChange(val || '')} theme={theme === 'dark' ? 'vs-dark' : 'light'}
           options={{
             fontSize: 13, fontFamily: "'JetBrains Mono', monospace", minimap: { enabled: false },
             lineNumbers: 'on', scrollBeyondLastLine: false, wordWrap: 'on',
