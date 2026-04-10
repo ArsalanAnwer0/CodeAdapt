@@ -107,28 +107,34 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
         {/* Timeline */}
         {result.timeline.length > 0 && (
           <div className="rounded-xl mb-6 overflow-hidden animate-fade-in" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)', animationDelay: '0.35s' }}>
-            <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border-secondary)' }}>
-              <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Timeline</h2>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: '1px solid var(--border-secondary)' }}>
+              <Clock className="w-3.5 h-3.5" style={{ color: 'var(--text-quaternary)' }} />
+              <h2 className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>Session Timeline</h2>
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md ml-auto" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-quaternary)' }}>{result.timeline.length} events</span>
             </div>
-            <div className="overflow-x-auto p-4">
+            <div className="overflow-x-auto p-5">
               <div className="flex items-start gap-0 min-w-max">
                 {result.timeline.map((ev, i) => (
                   <React.Fragment key={i}>
-                    <div className="flex flex-col items-center gap-1.5" style={{ minWidth: '80px' }}>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{
+                    <div className="flex flex-col items-center gap-2" style={{ minWidth: '90px' }}>
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center transition-transform duration-200 hover:scale-110" style={{
                         background: ev.type === 'problem' ? 'rgba(130,80,223,0.08)' : ev.type === 'injection' ? 'rgba(188,76,0,0.08)' : 'rgba(9,105,218,0.08)',
-                        border: `1px solid ${ev.type === 'problem' ? 'rgba(130,80,223,0.15)' : ev.type === 'injection' ? 'rgba(188,76,0,0.15)' : 'rgba(9,105,218,0.15)'}`,
+                        border: `1.5px solid ${ev.type === 'problem' ? 'rgba(130,80,223,0.2)' : ev.type === 'injection' ? 'rgba(188,76,0,0.2)' : 'rgba(9,105,218,0.2)'}`,
                       }}>
-                        {ev.type === 'problem' && <Brain className="w-3.5 h-3.5" style={{ color: 'var(--accent-purple)' }} />}
-                        {ev.type === 'injection' && <Zap className="w-3.5 h-3.5" style={{ color: 'var(--accent-orange)' }} />}
-                        {ev.type === 'submission' && <CheckCircle2 className="w-3.5 h-3.5" style={{ color: 'var(--accent-blue)' }} />}
+                        {ev.type === 'problem' && <Brain className="w-4 h-4" style={{ color: 'var(--accent-purple)' }} />}
+                        {ev.type === 'injection' && <Zap className="w-4 h-4" style={{ color: 'var(--accent-orange)' }} />}
+                        {ev.type === 'submission' && <CheckCircle2 className="w-4 h-4" style={{ color: 'var(--accent-blue)' }} />}
                       </div>
                       <div className="text-center">
-                        <p className="text-[11px] font-medium" style={{ color: 'var(--text-secondary)' }}>{ev.label}</p>
-                        <p className="text-[10px]" style={{ color: 'var(--text-quaternary)' }}>{formatEventTime(ev.time)}</p>
+                        <p className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>{ev.label}</p>
+                        <p className="text-[10px] font-mono mt-0.5" style={{ color: 'var(--text-quaternary)' }}>{formatEventTime(ev.time)}</p>
                       </div>
                     </div>
-                    {i < result.timeline.length - 1 && <div className="w-8 h-px mt-4" style={{ background: 'var(--border-primary)' }} />}
+                    {i < result.timeline.length - 1 && (
+                      <div className="flex items-center mt-4.5">
+                        <div className="w-10 h-px" style={{ background: 'linear-gradient(to right, var(--border-primary), var(--border-secondary))' }} />
+                      </div>
+                    )}
                   </React.Fragment>
                 ))}
               </div>
