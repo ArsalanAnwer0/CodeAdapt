@@ -92,31 +92,37 @@ export default function ProblemPanel({ problem, injections }: ProblemPanelProps)
       <div className="flex-shrink-0" style={{ borderTop: '1px solid var(--border-secondary)', maxHeight: '35%', minHeight: '100px' }}>
         <div className="flex items-center gap-2 px-4 py-2" style={{ borderBottom: '1px solid var(--border-secondary)', background: 'var(--bg-secondary)' }}>
           <Activity className="w-3 h-3" style={{ color: 'var(--accent-orange)' }} />
-          <span className="text-[11px] font-semibold" style={{ color: 'var(--text-tertiary)' }}>Live Feed</span>
+          <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>Live Feed</span>
           {injections.length > 0 && (
-            <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded" style={{
-              background: 'rgba(188,76,0,0.1)', color: 'var(--accent-orange)',
+            <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-md" style={{
+              background: 'rgba(188,76,0,0.1)', color: 'var(--accent-orange)', border: '1px solid rgba(188,76,0,0.15)',
             }}>{injections.length}</span>
           )}
         </div>
-        <div className="overflow-y-auto p-2 space-y-1.5" style={{ maxHeight: 'calc(100% - 33px)' }}>
+        <div className="overflow-y-auto p-2.5 space-y-2" style={{ maxHeight: 'calc(100% - 33px)' }}>
           {injections.length === 0 ? (
-            <p className="text-center py-4 text-[11px]" style={{ color: 'var(--text-quaternary)' }}>No injections yet</p>
+            <div className="flex flex-col items-center justify-center py-6 gap-1.5">
+              <Activity className="w-4 h-4" style={{ color: 'var(--border-primary)' }} />
+              <p className="text-[11px]" style={{ color: 'var(--text-quaternary)' }}>No injections yet</p>
+            </div>
           ) : (
             injections.map((inj, idx) => (
-              <div key={inj.id} className={`rounded-md p-2.5 ${idx === injections.length - 1 ? 'animate-inject-glow' : ''}`}
+              <div key={inj.id} className={`rounded-lg p-2.5 transition-all duration-300 ${idx === injections.length - 1 ? 'animate-inject-glow' : ''}`}
                 style={{
                   background: inj.type === 'bug' ? 'rgba(188,76,0,0.04)' : 'rgba(191,135,0,0.04)',
-                  borderLeft: `2px solid ${inj.type === 'bug' ? 'var(--accent-orange)' : 'var(--accent-amber)'}`,
+                  borderLeft: `2.5px solid ${inj.type === 'bug' ? 'var(--accent-orange)' : 'var(--accent-amber)'}`,
+                  border: `1px solid ${inj.type === 'bug' ? 'rgba(188,76,0,0.08)' : 'rgba(191,135,0,0.08)'}`,
+                  borderLeftWidth: '2.5px',
+                  borderLeftColor: inj.type === 'bug' ? 'var(--accent-orange)' : 'var(--accent-amber)',
                 }}>
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-1.5">
                     {inj.type === 'bug' ? <Bug className="w-3 h-3" style={{ color: 'var(--accent-orange)' }} /> : <Zap className="w-3 h-3" style={{ color: 'var(--accent-amber)' }} />}
-                    <span className="text-[10px] font-bold uppercase" style={{ color: inj.type === 'bug' ? 'var(--accent-orange)' : 'var(--accent-amber)' }}>
-                      {inj.type === 'bug' ? 'Bug' : 'Change'}
+                    <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: inj.type === 'bug' ? 'var(--accent-orange)' : 'var(--accent-amber)' }}>
+                      {inj.type === 'bug' ? 'Bug Report' : 'Req Change'}
                     </span>
                   </div>
-                  <span className="text-[10px]" style={{ color: 'var(--text-quaternary)' }}>{formatTime(inj.timestamp)}</span>
+                  <span className="text-[9px] font-mono" style={{ color: 'var(--text-quaternary)' }}>{formatTime(inj.timestamp)}</span>
                 </div>
                 <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{inj.content}</p>
               </div>
