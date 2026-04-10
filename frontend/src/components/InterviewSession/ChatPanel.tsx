@@ -15,8 +15,8 @@ function formatTime(date: Date): string {
 function MessageBubble({ message }: { message: ChatMessage }) {
   if (message.role === 'system') {
     return (
-      <div className="flex justify-center animate-message py-1">
-        <span className="text-[11px] px-3 py-1 rounded-full" style={{ color: 'var(--text-quaternary)', background: 'var(--bg-tertiary)' }}>
+      <div className="flex justify-center animate-message py-1.5">
+        <span className="text-[10px] font-medium px-3 py-1 rounded-full" style={{ color: 'var(--text-quaternary)', background: 'var(--bg-tertiary)', border: '1px solid var(--border-secondary)' }}>
           {message.content}
         </span>
       </div>
@@ -25,16 +25,17 @@ function MessageBubble({ message }: { message: ChatMessage }) {
 
   if (message.role === 'injection') {
     return (
-      <div className="animate-message animate-inject-glow mx-1 rounded-lg p-3" style={{
-        background: 'rgba(188,76,0,0.06)',
-        border: '1px solid rgba(188,76,0,0.15)',
+      <div className="animate-message animate-inject-glow mx-1 rounded-xl p-3.5" style={{
+        background: 'rgba(188,76,0,0.05)',
+        border: '1px solid rgba(188,76,0,0.12)',
+        borderLeft: '3px solid var(--accent-orange)',
       }}>
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <Zap className="w-3 h-3 fill-current" style={{ color: 'var(--accent-orange)' }} />
+        <div className="flex items-center gap-1.5 mb-2">
+          <Zap className="w-3.5 h-3.5 fill-current" style={{ color: 'var(--accent-orange)' }} />
           <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--accent-orange)' }}>Chaos Injected</span>
-          <span className="ml-auto text-[10px]" style={{ color: 'var(--text-quaternary)' }}>{formatTime(message.timestamp)}</span>
+          <span className="ml-auto text-[9px] font-mono" style={{ color: 'var(--text-quaternary)' }}>{formatTime(message.timestamp)}</span>
         </div>
-        <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{message.content}</p>
+        <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{message.content}</p>
       </div>
     )
   }
@@ -42,33 +43,33 @@ function MessageBubble({ message }: { message: ChatMessage }) {
   if (message.role === 'user') {
     return (
       <div className="flex justify-end animate-message">
-        <div style={{ maxWidth: '85%' }}>
-          <div className="rounded-2xl rounded-br-md px-3.5 py-2.5" style={{
-            background: 'rgba(9,105,218,0.08)',
-            border: '1px solid rgba(9,105,218,0.12)',
+        <div style={{ maxWidth: '82%' }}>
+          <div className="rounded-2xl rounded-br-sm px-3.5 py-2.5" style={{
+            background: 'rgba(9,105,218,0.07)',
+            border: '1px solid rgba(9,105,218,0.1)',
           }}>
-            <p className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>{message.content}</p>
+            <p className="text-[12.5px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--text-primary)' }}>{message.content}</p>
           </div>
-          <p className="text-[10px] mt-1 text-right pr-1" style={{ color: 'var(--text-quaternary)' }}>{formatTime(message.timestamp)}</p>
+          <p className="text-[9px] font-mono mt-1 text-right pr-1" style={{ color: 'var(--text-quaternary)' }}>{formatTime(message.timestamp)}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex items-start gap-2 animate-message">
+    <div className="flex items-start gap-2.5 animate-message">
       <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5" style={{
-        background: 'rgba(130,80,223,0.08)', border: '1px solid rgba(130,80,223,0.12)',
+        background: 'rgba(130,80,223,0.07)', border: '1px solid rgba(130,80,223,0.1)',
       }}>
-        <Bot className="w-3.5 h-3.5" style={{ color: 'var(--accent-purple)' }} />
+        <Bot className="w-3 h-3" style={{ color: 'var(--accent-purple)' }} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="rounded-2xl rounded-tl-md px-3.5 py-2.5" style={{
+        <div className="rounded-2xl rounded-tl-sm px-3.5 py-2.5" style={{
           background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)',
         }}>
-          <p className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>{message.content}</p>
+          <p className="text-[12.5px] leading-[1.65] whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>{message.content}</p>
         </div>
-        <p className="text-[10px] mt-1 pl-1" style={{ color: 'var(--text-quaternary)' }}>{formatTime(message.timestamp)}</p>
+        <p className="text-[9px] font-mono mt-1 pl-1" style={{ color: 'var(--text-quaternary)' }}>{formatTime(message.timestamp)}</p>
       </div>
     </div>
   )
