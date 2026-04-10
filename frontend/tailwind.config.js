@@ -19,8 +19,33 @@ export default {
         'text-muted': '#64748b',
       },
       fontFamily: {
-        sans: ['DM Sans', 'Inter', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
+      },
+      spacing: {
+        '4.5': '1.125rem',
+        '13': '3.25rem',
+        '15': '3.75rem',
+        '18': '4.5rem',
+      },
+      borderRadius: {
+        'sm': '6px',
+        'md': '8px',
+        'lg': '12px',
+        'xl': '16px',
+        '2xl': '20px',
+      },
+      boxShadow: {
+        'soft': '0 1px 2px rgba(31, 35, 40, 0.04)',
+        'card': '0 1px 3px rgba(31, 35, 40, 0.06), 0 1px 2px rgba(31, 35, 40, 0.04)',
+        'elevated': '0 4px 12px rgba(31, 35, 40, 0.08), 0 1px 3px rgba(31, 35, 40, 0.04)',
+        'focus-ring': '0 0 0 3px rgba(9, 105, 218, 0.15)',
+        'button': '0 1px 2px rgba(9, 105, 218, 0.2), 0 0 0 1px rgba(9, 105, 218, 0.1)',
+      },
+      transitionTimingFunction: {
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
       },
       animation: {
         'fade-in': 'fadeIn 0.4s ease-out',
@@ -31,6 +56,7 @@ export default {
         'inject-flash': 'injectFlash 0.6s ease-out',
         'score-reveal': 'scoreReveal 1s ease-out forwards',
         'dot-pulse': 'dotPulse 1.5s ease-in-out infinite',
+        'spin-slow': 'spin 3s linear infinite',
       },
       keyframes: {
         fadeIn: {
