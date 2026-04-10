@@ -85,19 +85,19 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
             An AI interviewer that throws curveballs, changes requirements mid-session, and scores your adaptability.
           </p>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {[
               { icon: Brain, label: 'AI Interviewer', desc: 'Real-time feedback and adaptive questions' },
               { icon: Sparkles, label: 'Live Injections', desc: 'Mid-session requirement changes and bugs' },
               { icon: Timer, label: 'Timed Sessions', desc: '15-60 min sessions with live scoring' },
             ].map((f) => (
-              <div key={f.label} className="flex items-center gap-3 p-3 rounded-lg bg-white/10 backdrop-blur border border-white/10">
-                <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0">
-                  <f.icon className="w-4 h-4 text-white" />
+              <div key={f.label} className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.08] hover:bg-white/[0.12] hover:border-white/[0.15] transition-all duration-200 group">
+                <div className="w-9 h-9 rounded-lg bg-white/[0.12] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.18] transition-colors duration-200">
+                  <f.icon className="w-4 h-4 text-white/90" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">{f.label}</p>
-                  <p className="text-xs text-white/60">{f.desc}</p>
+                  <p className="text-[13px] font-semibold text-white">{f.label}</p>
+                  <p className="text-[11px] text-white/50 leading-snug">{f.desc}</p>
                 </div>
               </div>
             ))}
