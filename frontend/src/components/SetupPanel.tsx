@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Zap, ChevronRight, Terminal, Brain, Timer, Sparkles, History } from 'lucide-react'
 import { Language, Difficulty, Topic, SessionDuration, SessionConfig } from '../types'
+import { usePreferences } from '../stores/preferences'
 
 interface SetupPanelProps {
   onStart: (config: SessionConfig) => void
@@ -39,9 +40,10 @@ const TOPICS: { id: Topic; label: string }[] = [
 const DURATIONS: SessionDuration[] = [15, 30, 45, 60]
 
 export default function SetupPanel({ onStart, onViewHistory }: SetupPanelProps) {
-  const [language, setLanguage] = useState<Language>('javascript')
-  const [difficulty, setDifficulty] = useState<Difficulty>('medium')
-  const [topic, setTopic] = useState<Topic>('arrays')
+  const { preferences } = usePreferences()
+  const [language, setLanguage] = useState<Language>(preferences.language)
+  const [difficulty, setDifficulty] = useState<Difficulty>(preferences.difficulty)
+  const [topic, setTopic] = useState<Topic>(preferences.topic)
   const [duration, setDuration] = useState<SessionDuration>(30)
 
   const handleStart = () => onStart({ language, difficulty, topic, duration })
