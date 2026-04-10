@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Trophy, RotateCcw, Copy, CheckCircle2, Zap, Brain, MessageSquare, Code2, Clock, Check } from 'lucide-react'
 import { SessionResult } from '../types'
+import Confetti from './Confetti'
 
 interface ResultsScreenProps {
   result: SessionResult
@@ -55,6 +56,7 @@ function StatCard({ icon, label, value, barValue, barColor }: { icon: React.Reac
 export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
   const [copied, setCopied] = useState(false)
   const score = Math.round(result.metrics.adaptabilityScore * 0.4 + result.codeQualityScore * 0.35 + result.communicationScore * 0.25)
+  const [celebrate, setCelebrate] = useState(score >= 80)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(`CodeAdapt: ${score}/100 (${getGrade(score)}) | ${result.config.difficulty} ${result.config.topic} in ${result.config.language} | ${formatDuration(result.duration)}`).then(() => {
@@ -63,7 +65,8 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
   }
 
   return (
-    <div className="min-h-screen overflow-y-auto" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen overflow-y-auto relative" style={{ background: 'var(--bg-primary)' }}>
+      {celebrate && <Confetti onDone={() => setCelebrate(false)} />}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full opacity-[0.04] blur-[100px]"
           style={{ background: 'radial-gradient(circle, var(--accent-blue), var(--accent-purple), transparent)' }} />
