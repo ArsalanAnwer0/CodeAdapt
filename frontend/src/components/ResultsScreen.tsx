@@ -37,15 +37,15 @@ function ScoreRing({ score }: { score: number }) {
 
 function StatCard({ icon, label, value, barValue, barColor }: { icon: React.ReactNode; label: string; value: string | number; barValue?: number; barColor?: string }) {
   return (
-    <div className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)' }}>
-      <div className="flex items-center gap-2 mb-2">
-        <span style={{ color: 'var(--text-quaternary)' }}>{icon}</span>
-        <span className="text-[11px] font-medium" style={{ color: 'var(--text-tertiary)' }}>{label}</span>
+    <div className="rounded-xl p-4 transition-all duration-200 hover:shadow-card" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)' }}>
+      <div className="flex items-center gap-2 mb-2.5">
+        <span className="p-1 rounded-md" style={{ color: barColor || 'var(--text-quaternary)', background: barColor ? `${barColor}10` : 'var(--bg-tertiary)' }}>{icon}</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--text-tertiary)', letterSpacing: '0.05em' }}>{label}</span>
       </div>
-      <p className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{value}</p>
+      <p className="text-2xl font-extrabold mb-2" style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>{value}</p>
       {barValue !== undefined && barColor && (
         <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-tertiary)' }}>
-          <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, barValue)}%`, background: barColor }} />
+          <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${Math.min(100, barValue)}%`, background: barColor }} />
         </div>
       )}
     </div>
@@ -71,20 +71,23 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
 
       <div className="relative max-w-3xl mx-auto px-6 py-12">
         {/* Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full" style={{
-            background: 'rgba(9,105,218,0.06)', border: '1px solid rgba(9,105,218,0.12)',
+        <div className="text-center mb-10 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 rounded-full" style={{
+            background: 'rgba(9,105,218,0.06)', border: '1px solid rgba(9,105,218,0.1)',
           }}>
             <Trophy className="w-3.5 h-3.5" style={{ color: 'var(--accent-blue)' }} />
-            <span className="text-[12px] font-medium" style={{ color: 'var(--accent-blue)' }}>Session Complete</span>
+            <span className="text-[11px] font-semibold" style={{ color: 'var(--accent-blue)' }}>Session Complete</span>
           </div>
-          <h1 className="text-3xl font-bold mb-1.5" style={{ color: 'var(--text-primary)' }}>Interview Results</h1>
-          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            <span className="font-mono" style={{ color: 'var(--text-secondary)' }}>{formatDuration(result.duration)}</span>
-            {' · '}<span className="capitalize">{result.config.difficulty}</span>
-            {' · '}<span className="capitalize">{result.config.topic.replace(/-/g, ' ')}</span>
-            {' · '}<span className="capitalize">{result.config.language}</span>
-          </p>
+          <h1 className="text-[32px] font-extrabold mb-2" style={{ color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Interview Results</h1>
+          <div className="flex items-center justify-center gap-2 text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
+            <span className="font-mono font-semibold px-2 py-0.5 rounded-md" style={{ color: 'var(--text-secondary)', background: 'var(--bg-secondary)' }}>{formatDuration(result.duration)}</span>
+            <span>·</span>
+            <span className="capitalize">{result.config.difficulty}</span>
+            <span>·</span>
+            <span className="capitalize">{result.config.topic.replace(/-/g, ' ')}</span>
+            <span>·</span>
+            <span className="capitalize">{result.config.language}</span>
+          </div>
         </div>
 
         <div className="flex flex-col items-center mb-8 animate-fade-in" style={{ animationDelay: '0.15s' }}>
