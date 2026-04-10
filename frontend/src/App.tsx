@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import SetupPanel from './components/SetupPanel'
 import InterviewSession from './components/InterviewSession'
 import ResultsScreen from './components/ResultsScreen'
 import HistoryScreen from './components/HistoryScreen'
+import { useHistory } from './stores/history'
+import { usePreferences } from './stores/preferences'
 import { SessionConfig, SessionResult } from './types'
 
 type AppState = 'setup' | 'interview' | 'results' | 'history'
@@ -33,13 +35,25 @@ export default function App() {
   const [appState, setAppState] = useState<AppState>('setup')
   const [sessionConfig, setSessionConfig] = useState<SessionConfig | null>(null)
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null)
+  const { add: addToHistory } = useHistory()
+  const { setPreference } = usePreferences()
+  const persistedResultIds = useRef<Set<SessionResult>>(new Set())
 
   const handleStart = (config: SessionConfig) => {
+    // Remember the last-used configuration for next time.
+    setPreference('language', config.language)
+    setPreference('topic', config.topic)
+    setPreference('difficulty', config.difficulty)
     setSessionConfig(config)
     setAppState('interview')
   }
 
   const handleEndSession = (result: SessionResult) => {
+    // Persist completed sessions to history exactly once.
+    if (!persistedResultIds.current.has(result)) {
+      persistedResultIds.current.add(result)
+      addToHistory(result)
+    }
     setSessionResult(result)
     setAppState('results')
   }
