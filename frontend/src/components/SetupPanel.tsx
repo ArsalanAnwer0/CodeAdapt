@@ -55,16 +55,22 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
     <div className="h-screen flex" style={{ background: 'var(--bg-primary)' }}>
       {/* Left Hero */}
       <div className="hidden lg:flex lg:w-[44%] relative overflow-hidden flex-col justify-between p-10"
-        style={{ background: 'linear-gradient(145deg, #0969da 0%, #0550ae 40%, #8250df 100%)' }}>
+        style={{ background: 'linear-gradient(155deg, #0969da 0%, #0550ae 35%, #6639ba 70%, #8250df 100%)' }}>
 
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0)',
-          backgroundSize: '24px 24px',
+        <div className="absolute inset-0 opacity-[0.07]" style={{
+          backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, rgba(255,255,255,0.4) 1px, transparent 0)',
+          backgroundSize: '20px 20px',
         }} />
+
+        {/* Subtle radial glow */}
+        <div className="absolute top-1/4 -right-1/4 w-[500px] h-[500px] rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, rgba(130,80,223,0.6), transparent 70%)' }} />
+        <div className="absolute -bottom-1/4 -left-1/4 w-[400px] h-[400px] rounded-full opacity-15"
+          style={{ background: 'radial-gradient(circle, rgba(9,105,218,0.8), transparent 70%)' }} />
 
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-lg shadow-black/10">
               <Zap className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-bold text-white tracking-tight">CodeAdapt</span>
@@ -72,10 +78,10 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
         </div>
 
         <div className="relative z-10 max-w-md">
-          <h1 className="text-4xl font-extrabold text-white leading-tight mb-4" style={{ letterSpacing: '-0.03em' }}>
+          <h1 className="text-[2.75rem] font-extrabold text-white leading-[1.15] mb-5" style={{ letterSpacing: '-0.035em' }}>
             Practice coding interviews that adapt in real-time
           </h1>
-          <p className="text-base text-white/70 leading-relaxed mb-8">
+          <p className="text-[15px] text-white/65 leading-relaxed mb-8">
             An AI interviewer that throws curveballs, changes requirements mid-session, and scores your adaptability.
           </p>
 
