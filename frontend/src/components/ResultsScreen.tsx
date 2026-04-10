@@ -145,17 +145,24 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
         {/* Injections Review */}
         {result.injections.length > 0 && (
           <div className="rounded-xl mb-8 overflow-hidden animate-fade-in" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)', animationDelay: '0.4s' }}>
-            <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border-secondary)' }}>
-              <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Injections Review</h2>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: '1px solid var(--border-secondary)' }}>
+              <Zap className="w-3.5 h-3.5" style={{ color: 'var(--accent-orange)' }} />
+              <h2 className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>Injections Review</h2>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md ml-auto" style={{ background: 'rgba(188,76,0,0.08)', color: 'var(--accent-orange)' }}>{result.injections.length}</span>
             </div>
-            {result.injections.map((inj) => (
-              <div key={inj.id} className="px-4 py-3 flex items-start gap-2.5" style={{ borderBottom: '1px solid var(--border-secondary)' }}>
-                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5" style={{ background: inj.type === 'bug' ? 'var(--accent-orange)' : 'var(--accent-amber)' }} />
-                <div>
+            {result.injections.map((inj, idx) => (
+              <div key={inj.id} className="px-4 py-3.5 flex items-start gap-3" style={{ borderBottom: idx < result.injections.length - 1 ? '1px solid var(--border-secondary)' : 'none' }}>
+                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{
+                  background: inj.type === 'bug' ? 'rgba(188,76,0,0.08)' : 'rgba(191,135,0,0.08)',
+                  border: `1px solid ${inj.type === 'bug' ? 'rgba(188,76,0,0.15)' : 'rgba(191,135,0,0.15)'}`,
+                }}>
+                  {inj.type === 'bug' ? <span className="text-[10px]">🐛</span> : <Zap className="w-3 h-3" style={{ color: 'var(--accent-amber)' }} />}
+                </div>
+                <div className="flex-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: inj.type === 'bug' ? 'var(--accent-orange)' : 'var(--accent-amber)' }}>
-                    {inj.type === 'bug' ? 'Bug' : 'Change'}
+                    {inj.type === 'bug' ? 'Bug Report' : 'Requirement Change'}
                   </span>
-                  <p className="text-[13px] mt-0.5 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{inj.content}</p>
+                  <p className="text-[12.5px] mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{inj.content}</p>
                 </div>
               </div>
             ))}
