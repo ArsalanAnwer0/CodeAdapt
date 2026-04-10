@@ -13,23 +13,23 @@ function getGrade(s: number) { return s >= 90 ? 'A+' : s >= 80 ? 'A' : s >= 75 ?
 function getColor(s: number) { return s >= 70 ? 'var(--accent-blue)' : s >= 40 ? 'var(--accent-amber)' : 'var(--accent-orange)' }
 
 function ScoreRing({ score }: { score: number }) {
-  const r = 56, c = 2 * Math.PI * r
+  const r = 58, c = 2 * Math.PI * r
   const [show, setShow] = useState(false)
   const color = getColor(score)
   useEffect(() => { setTimeout(() => setShow(true), 400) }, [])
 
   return (
     <div className="relative flex items-center justify-center">
-      <svg width="150" height="150" className="-rotate-90">
-        <circle cx="75" cy="75" r={r} fill="none" stroke="var(--bg-tertiary)" strokeWidth="8" />
-        <circle cx="75" cy="75" r={r} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round"
+      <svg width="160" height="160" className="-rotate-90">
+        <circle cx="80" cy="80" r={r} fill="none" stroke="var(--bg-tertiary)" strokeWidth="7" />
+        <circle cx="80" cy="80" r={r} fill="none" stroke={color} strokeWidth="7" strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={show ? c - (score/100)*c : c}
-          style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1)' }} />
+          style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(0.4,0,0.2,1)', filter: `drop-shadow(0 0 6px ${color}40)` }} />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-[40px] font-bold leading-none" style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{score}</span>
-        <span className="text-xs" style={{ color: 'var(--text-quaternary)' }}>/ 100</span>
-        <span className="text-lg font-bold mt-0.5" style={{ color }}>{getGrade(score)}</span>
+        <span className="text-[42px] font-extrabold leading-none" style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em' }}>{score}</span>
+        <span className="text-[11px] font-medium mt-0.5" style={{ color: 'var(--text-quaternary)' }}>out of 100</span>
+        <span className="text-lg font-extrabold mt-1 px-2 py-0.5 rounded-md" style={{ color, background: `${color}10` }}>{getGrade(score)}</span>
       </div>
     </div>
   )
