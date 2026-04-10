@@ -3,8 +3,11 @@ import SetupPanel from './components/SetupPanel'
 import InterviewSession from './components/InterviewSession'
 import ResultsScreen from './components/ResultsScreen'
 import HistoryScreen from './components/HistoryScreen'
+import MobileWarning from './components/MobileWarning'
 import { useHistory } from './stores/history'
 import { usePreferences } from './stores/preferences'
+import { useMediaQuery } from './hooks/useMediaQuery'
+import { MIN_INTERVIEW_WIDTH } from './lib/constants'
 import { SessionConfig, SessionResult } from './types'
 
 type AppState = 'setup' | 'interview' | 'results' | 'history'
@@ -32,6 +35,7 @@ function PageTransition({ children, state }: { children: React.ReactNode; state:
 }
 
 export default function App() {
+  const isTooNarrow = useMediaQuery(`(max-width: ${MIN_INTERVIEW_WIDTH - 1}px)`)
   const [appState, setAppState] = useState<AppState>('setup')
   const [sessionConfig, setSessionConfig] = useState<SessionConfig | null>(null)
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null)
@@ -88,6 +92,12 @@ export default function App() {
         onViewHistory={() => setAppState('history')}
       />
     )
+  }
+
+  // Block the interview layout on tiny viewports. The setup and history
+  // screens are narrow-friendly, so only guard `interview`.
+  if (appState === 'interview' && isTooNarrow) {
+    return <MobileWarning />
   }
 
   return (
