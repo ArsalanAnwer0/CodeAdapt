@@ -109,20 +109,23 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
 
       {/* Right Form */}
       <div className="flex-1 flex flex-col overflow-y-auto" style={{ background: 'var(--bg-primary)' }}>
-        <div className="lg:hidden p-6 pb-2">
+        <div className="lg:hidden p-6 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--accent-blue)' }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent-blue), #0550ae)' }}>
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>CodeAdapt</span>
+            <div>
+              <span className="text-lg font-bold block leading-tight" style={{ color: 'var(--text-primary)' }}>CodeAdapt</span>
+              <span className="text-[10px] font-medium" style={{ color: 'var(--text-quaternary)' }}>Interview Practice</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center p-6 lg:p-10">
+        <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
           <div className="w-full max-w-md animate-fade-in">
             <div className="mb-8">
-              <h2 className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Configure Session</h2>
-              <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Set up your practice interview</p>
+              <h2 className="text-xl font-bold mb-1.5" style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Configure Session</h2>
+              <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>Set up your practice interview</p>
             </div>
 
             {/* Language */}
