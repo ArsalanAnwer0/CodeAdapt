@@ -97,13 +97,21 @@ export default function ChatPanel({ messages, isTyping, onSendMessage }: ChatPan
     <div className="flex flex-col h-full" style={{ background: 'var(--bg-primary)' }}>
       {/* Header */}
       <div className="flex items-center gap-2 px-4 h-10 flex-shrink-0" style={{ borderBottom: '1px solid var(--border-secondary)', background: 'var(--bg-secondary)' }}>
-        <MessageSquare className="w-3.5 h-3.5" style={{ color: 'var(--text-quaternary)' }} />
-        <span className="text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>AI Interviewer</span>
+        <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'rgba(130,80,223,0.08)', border: '1px solid rgba(130,80,223,0.12)' }}>
+          <Bot className="w-3 h-3" style={{ color: 'var(--accent-purple)' }} />
+        </div>
+        <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>AI Interviewer</span>
         <div className="ml-auto flex items-center gap-1.5">
           {isTyping ? (
-            <><span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--accent-orange)' }} /><span className="text-[11px]" style={{ color: 'var(--accent-orange)' }}>Typing...</span></>
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full" style={{ background: 'rgba(188,76,0,0.06)' }}>
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--accent-orange)' }} />
+              <span className="text-[10px] font-medium" style={{ color: 'var(--accent-orange)' }}>Typing...</span>
+            </div>
           ) : (
-            <><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent-blue)' }} /><span className="text-[11px]" style={{ color: 'var(--text-quaternary)' }}>Online</span></>
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full" style={{ background: 'rgba(26,127,55,0.06)' }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent-green)' }} />
+              <span className="text-[10px] font-medium" style={{ color: 'var(--text-quaternary)' }}>Online</span>
+            </div>
           )}
         </div>
       </div>
