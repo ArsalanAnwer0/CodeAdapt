@@ -118,7 +118,7 @@ export default function ChatPanel({ messages, isTyping, onSendMessage }: ChatPan
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+      <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 min-h-0">
         {messages.map(msg => <MessageBubble key={msg.id} message={msg} />)}
         {isTyping && (
           <div className="flex items-start gap-2.5 animate-message">

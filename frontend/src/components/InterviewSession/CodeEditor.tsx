@@ -135,7 +135,10 @@ export default function CodeEditor({ language, problem, code, onCodeChange, onRu
                 ))}
               </div>
             ) : (
-              <p className="text-[11px] py-2" style={{ color: 'var(--text-quaternary)' }}>Run code to see results</p>
+              <div className="flex items-center gap-2 py-3">
+                <Play className="w-3.5 h-3.5" style={{ color: 'var(--border-primary)' }} />
+                <p className="text-[11px]" style={{ color: 'var(--text-quaternary)' }}>Run your code to see test results here</p>
+              </div>
             )}
           </div>
         )}
