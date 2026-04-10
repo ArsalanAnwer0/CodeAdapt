@@ -1,10 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SetupPanel from './components/SetupPanel'
 import InterviewSession from './components/InterviewSession'
 import ResultsScreen from './components/ResultsScreen'
 import { SessionConfig, SessionResult } from './types'
 
 type AppState = 'setup' | 'interview' | 'results'
+
+function PageTransition({ children, state }: { children: React.ReactNode; state: string }) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(false)
+    const timer = requestAnimationFrame(() => setMounted(true))
+    return () => cancelAnimationFrame(timer)
+  }, [state])
+
+  return (
+    <div
+      style={{
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'translateY(0)' : 'translateY(6px)',
+        transition: 'opacity 0.35s ease-out, transform 0.35s ease-out',
+        height: '100%',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
 
 export default function App() {
   const [appState, setAppState] = useState<AppState>('setup')
@@ -27,23 +49,19 @@ export default function App() {
     setAppState('setup')
   }
 
-  if (appState === 'setup') {
+  const renderContent = () => {
+    if (appState === 'interview' && sessionConfig) {
+      return <InterviewSession config={sessionConfig} onEnd={handleEndSession} />
+    }
+    if (appState === 'results' && sessionResult) {
+      return <ResultsScreen result={sessionResult} onReset={handleReset} />
+    }
     return <SetupPanel onStart={handleStart} />
   }
 
-  if (appState === 'interview' && sessionConfig) {
-    return (
-      <InterviewSession
-        config={sessionConfig}
-        onEnd={handleEndSession}
-      />
-    )
-  }
-
-  if (appState === 'results' && sessionResult) {
-    return <ResultsScreen result={sessionResult} onReset={handleReset} />
-  }
-
-  // Fallback
-  return <SetupPanel onStart={handleStart} />
+  return (
+    <PageTransition state={appState}>
+      {renderContent()}
+    </PageTransition>
+  )
 }
