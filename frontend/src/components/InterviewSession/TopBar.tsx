@@ -16,7 +16,7 @@ function formatTime(seconds: number): string {
 export default function TopBar({ elapsedSeconds, onInject, onEndSession }: TopBarProps) {
   return (
     <div className="flex-shrink-0 flex items-center justify-between h-12 px-4"
-      style={{ background: 'var(--bg-primary)', borderBottom: '1px solid var(--border-secondary)', boxShadow: '0 1px 3px rgba(31,35,40,0.04)' }}>
+      style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderBottom: '1px solid var(--border-secondary)', boxShadow: '0 1px 3px rgba(31,35,40,0.04)' }}>
       <div className="flex items-center gap-2.5">
         <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent-blue), #0550ae)' }}>
           <Zap className="w-3.5 h-3.5 text-white" />
