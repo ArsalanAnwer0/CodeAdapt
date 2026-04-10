@@ -174,22 +174,22 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
   }, [metrics, code, messages, injections, timeline, config, onEnd, addMessage, addAIMessage])
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden animate-fade-in" style={{ background: 'var(--bg-secondary)' }}>
+    <div className="flex flex-col h-screen overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
       <TopBar elapsedSeconds={elapsedSeconds} onInject={handleInject} onEndSession={handleEndSession} />
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left: Problem — 22% */}
-        <div className="flex-none overflow-hidden" style={{ width: '22%', borderRight: '1px solid var(--border-secondary)' }}>
+        <div className="flex-none overflow-hidden" style={{ width: '22%', borderRight: '1px solid var(--border-secondary)', minWidth: '240px' }}>
           <ProblemPanel problem={problem} injections={injections} />
         </div>
 
         {/* Center: Code Editor — 50% */}
-        <div className="flex-none overflow-hidden" style={{ width: '50%', borderRight: '1px solid var(--border-secondary)' }}>
+        <div className="flex-1 overflow-hidden" style={{ borderRight: '1px solid var(--border-secondary)', minWidth: '400px' }}>
           <CodeEditor language={config.language} problem={problem} code={code} onCodeChange={setCode} onRun={handleRun} />
         </div>
 
         {/* Right: Chat — 28% */}
-        <div className="flex-none overflow-hidden" style={{ width: '28%' }}>
+        <div className="flex-none overflow-hidden" style={{ width: '28%', minWidth: '280px' }}>
           <ChatPanel messages={messages} isTyping={isTyping} onSendMessage={handleSendMessage} />
         </div>
       </div>
