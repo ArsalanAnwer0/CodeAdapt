@@ -52,15 +52,21 @@ export default function ProblemPanel({ problem, injections }: ProblemPanelProps)
 
         {/* Examples */}
         <div className="mb-4">
-          <h3 className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-quaternary)' }}>Examples</h3>
-          <div className="space-y-2">
+          <h3 className="text-[10px] font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-quaternary)', letterSpacing: '0.08em' }}>Examples</h3>
+          <div className="space-y-2.5">
             {problem.examples.map((ex, i) => (
-              <div key={i} className="rounded-md p-2.5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)' }}>
-                <div className="font-mono text-[11px] space-y-1">
-                  <div><span style={{ color: 'var(--text-quaternary)' }}>Input: </span><span style={{ color: 'var(--accent-purple)' }}>{ex.input}</span></div>
-                  <div><span style={{ color: 'var(--text-quaternary)' }}>Output: </span><span style={{ color: 'var(--accent-blue)' }}>{ex.output}</span></div>
+              <div key={i} className="rounded-lg p-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)' }}>
+                <div className="font-mono text-[11px] space-y-1.5">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-[10px] font-semibold uppercase" style={{ color: 'var(--text-quaternary)', minWidth: '42px' }}>Input</span>
+                    <span style={{ color: 'var(--accent-purple)', wordBreak: 'break-all' }}>{ex.input}</span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-[10px] font-semibold uppercase" style={{ color: 'var(--text-quaternary)', minWidth: '42px' }}>Output</span>
+                    <span style={{ color: 'var(--accent-blue)' }}>{ex.output}</span>
+                  </div>
                   {ex.explanation && (
-                    <div className="pt-1" style={{ borderTop: '1px solid var(--border-secondary)', color: 'var(--text-quaternary)' }}>{ex.explanation}</div>
+                    <div className="pt-1.5 mt-1 text-[10px] leading-relaxed" style={{ borderTop: '1px solid var(--border-secondary)', color: 'var(--text-quaternary)' }}>{ex.explanation}</div>
                   )}
                 </div>
               </div>
@@ -70,11 +76,11 @@ export default function ProblemPanel({ problem, injections }: ProblemPanelProps)
 
         {/* Constraints */}
         <div>
-          <h3 className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-quaternary)' }}>Constraints</h3>
-          <ul className="space-y-1">
+          <h3 className="text-[10px] font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-quaternary)', letterSpacing: '0.08em' }}>Constraints</h3>
+          <ul className="space-y-1.5">
             {problem.constraints.map((c, i) => (
-              <li key={i} className="flex items-start gap-1.5 font-mono text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
-                <span className="mt-[5px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: 'var(--text-quaternary)' }} />
+              <li key={i} className="flex items-start gap-2 font-mono text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+                <span className="mt-[6px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: 'var(--accent-purple)', opacity: 0.5 }} />
                 {c}
               </li>
             ))}
