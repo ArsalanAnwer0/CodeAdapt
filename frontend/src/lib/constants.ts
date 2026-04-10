@@ -37,6 +37,8 @@ export const SESSION = {
   maxScore: 100,
   /** Starting adaptability score. */
   initialScore: 70,
+  /** Debounce window for autosaving the active session to localStorage. */
+  autosaveMs: 600,
 } as const
 
 /** Weights for the composite final score (must sum to 1). */
