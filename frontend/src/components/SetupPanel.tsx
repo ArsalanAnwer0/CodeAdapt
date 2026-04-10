@@ -195,15 +195,16 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
 
             {/* Duration */}
             <div className="mb-8">
-              <label className="block text-xs font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)' }}>Duration</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)', letterSpacing: '0.08em' }}>Duration</label>
               <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-primary)' }}>
                 {DURATIONS.map((d, i) => (
                   <button key={d} onClick={() => setDuration(d)}
-                    className="flex-1 py-2.5 text-sm font-medium transition-all duration-150"
+                    className="flex-1 py-2.5 text-sm font-medium transition-all duration-200 relative"
                     style={{
                       background: duration === d ? 'var(--accent-blue)' : 'var(--bg-secondary)',
                       color: duration === d ? '#ffffff' : 'var(--text-tertiary)',
                       borderRight: i < DURATIONS.length - 1 ? '1px solid var(--border-primary)' : 'none',
+                      fontVariantNumeric: 'tabular-nums',
                     }}>
                     {d}m
                   </button>
@@ -213,14 +214,17 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
 
             {/* Start */}
             <button onClick={handleStart}
-              className="w-full group flex items-center justify-center gap-2.5 py-3.5 rounded-lg text-white font-semibold text-sm transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
-              style={{ background: 'var(--accent-blue)', boxShadow: '0 1px 3px rgba(9,105,218,0.3)' }}>
+              className="w-full group flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-white font-semibold text-sm transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, var(--accent-blue) 0%, #0550ae 100%)',
+                boxShadow: '0 2px 8px rgba(9,105,218,0.3), 0 1px 2px rgba(9,105,218,0.2)',
+              }}>
               <Terminal className="w-4 h-4" />
               Start Interview
-              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              <ChevronRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
             </button>
 
-            <p className="text-center text-xs mt-4" style={{ color: 'var(--text-quaternary)' }}>No account required · Session data stays local</p>
+            <p className="text-center text-[11px] mt-4" style={{ color: 'var(--text-quaternary)' }}>No account required · Session data stays local</p>
           </div>
         </div>
       </div>
