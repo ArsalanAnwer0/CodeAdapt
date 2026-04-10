@@ -52,7 +52,7 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
   }
 
   return (
-    <div className="h-screen flex" style={{ background: 'var(--bg-primary)' }}>
+    <div className="h-screen flex overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
       {/* Left Hero */}
       <div className="hidden lg:flex lg:w-[44%] relative overflow-hidden flex-col justify-between p-10"
         style={{ background: 'linear-gradient(155deg, #0969da 0%, #0550ae 35%, #6639ba 70%, #8250df 100%)' }}>

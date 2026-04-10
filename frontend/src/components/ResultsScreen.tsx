@@ -65,11 +65,11 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
   return (
     <div className="min-h-screen overflow-y-auto" style={{ background: 'var(--bg-primary)' }}>
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-[0.03] blur-[120px]"
-          style={{ background: 'radial-gradient(circle, var(--accent-blue), transparent)' }} />
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full opacity-[0.04] blur-[100px]"
+          style={{ background: 'radial-gradient(circle, var(--accent-blue), var(--accent-purple), transparent)' }} />
       </div>
 
-      <div className="relative max-w-3xl mx-auto px-6 py-12">
+      <div className="relative max-w-3xl mx-auto px-6 py-14">
         {/* Header */}
         <div className="text-center mb-10 animate-fade-in">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 rounded-full" style={{
@@ -97,7 +97,7 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in" style={{ animationDelay: '0.25s' }}>
+        <div className="grid grid-cols-3 gap-3 mb-8 animate-fade-in" style={{ animationDelay: '0.25s' }}>
           <StatCard icon={<CheckCircle2 className="w-4 h-4" />} label="Problems" value={`${result.metrics.problemsSolved}/${result.metrics.totalProblems}`} />
           <StatCard icon={<Clock className="w-4 h-4" />} label="Avg Response" value={`${result.metrics.avgResponseTime.toFixed(1)}m`} />
           <StatCard icon={<Zap className="w-4 h-4" />} label="Injections" value={result.metrics.injectionCount} />
