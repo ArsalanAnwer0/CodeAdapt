@@ -4,6 +4,11 @@ import ProblemPanel from './ProblemPanel'
 import CodeEditor from './CodeEditor'
 import ChatPanel from './ChatPanel'
 import MetricsBar from './MetricsBar'
+import KeyboardShortcutsModal from '../KeyboardShortcutsModal'
+import ConfirmEndSessionModal from '../ConfirmEndSessionModal'
+import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut'
+import { formatDurationHuman } from '../../lib/format'
+import { useTheme } from '../../theme/ThemeProvider'
 import {
   SessionConfig,
   ChatMessage,
@@ -35,6 +40,9 @@ interface InterviewSessionProps {
 }
 
 export default function InterviewSession({ config, onEnd }: InterviewSessionProps) {
+  const { toggle: toggleTheme } = useTheme()
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const [showConfirmEnd, setShowConfirmEnd] = useState(false)
   const [problem] = useState<Problem>(() => getRandomProblem(config.topic, config.difficulty))
   const [code, setCode] = useState(() => problem.starterCode[config.language])
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -173,9 +181,21 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
     setTimeout(() => onEnd(result), 1000)
   }, [metrics, code, messages, injections, timeline, config, onEnd, addMessage, addAIMessage])
 
+  // Global keyboard shortcuts for power users.
+  useKeyboardShortcut('mod+i', () => handleInject())
+  useKeyboardShortcut('mod+shift+e', () => setShowConfirmEnd(true))
+  useKeyboardShortcut('mod+shift+l', () => toggleTheme())
+  useKeyboardShortcut(['mod+/', 'mod+shift+?'], () =>
+    setShowShortcuts((prev) => !prev)
+  )
+
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
-      <TopBar elapsedSeconds={elapsedSeconds} onInject={handleInject} onEndSession={handleEndSession} />
+      <TopBar
+        elapsedSeconds={elapsedSeconds}
+        onInject={handleInject}
+        onEndSession={() => setShowConfirmEnd(true)}
+      />
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left: Problem — 22% */}
@@ -195,6 +215,25 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
       </div>
 
       <MetricsBar metrics={metrics} durationSeconds={elapsedSeconds} />
+
+      <KeyboardShortcutsModal
+        open={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
+      <ConfirmEndSessionModal
+        open={showConfirmEnd}
+        onClose={() => setShowConfirmEnd(false)}
+        onConfirm={handleEndSession}
+        summary={
+          <>
+            <strong style={{ color: 'var(--text-secondary)' }}>
+              {formatDurationHuman(elapsedSeconds)}
+            </strong>{' '}
+            elapsed · {messages.length} messages · {injections.length}{' '}
+            injections
+          </>
+        }
+      />
     </div>
   )
 }
