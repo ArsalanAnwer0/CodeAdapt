@@ -27,15 +27,16 @@ export default function ProblemPanel({ problem, injections }: ProblemPanelProps)
   return (
     <div className="flex flex-col h-full" style={{ background: 'var(--bg-primary)' }}>
       {/* Header */}
-      <div className="flex-shrink-0 flex items-center gap-2 px-4 h-10" style={{ borderBottom: '1px solid var(--border-secondary)' }}>
-        <FileText className="w-3.5 h-3.5" style={{ color: 'var(--text-quaternary)' }} />
-        <span className="text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Problem</span>
+      <div className="flex-shrink-0 flex items-center gap-2 px-4 h-10" style={{ borderBottom: '1px solid var(--border-secondary)', background: 'var(--bg-secondary)' }}>
+        <FileText className="w-3.5 h-3.5" style={{ color: 'var(--accent-purple)' }} />
+        <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>Problem</span>
         <div className="ml-auto flex items-center gap-1.5">
-          <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded" style={{
-            background: `${diffColors[problem.difficulty]}15`,
+          <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md tracking-wide" style={{
+            background: `${diffColors[problem.difficulty]}10`,
             color: diffColors[problem.difficulty],
+            border: `1px solid ${diffColors[problem.difficulty]}20`,
           }}>{problem.difficulty}</span>
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{
+          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md capitalize" style={{
             background: 'var(--bg-tertiary)',
             color: 'var(--text-quaternary)',
           }}>{problem.topic.replace(/-/g, ' ')}</span>
@@ -44,8 +45,8 @@ export default function ProblemPanel({ problem, injections }: ProblemPanelProps)
 
       {/* Problem Content */}
       <div className="flex-1 overflow-y-auto p-4 min-h-0">
-        <h2 className="text-sm font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{problem.title}</h2>
-        <p className="text-xs leading-relaxed mb-4 whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>
+        <h2 className="text-[14px] font-bold mb-3" style={{ color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>{problem.title}</h2>
+        <p className="text-[12px] leading-[1.7] mb-4 whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>
           {problem.description}
         </p>
 
