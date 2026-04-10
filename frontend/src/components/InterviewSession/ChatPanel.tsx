@@ -121,17 +121,17 @@ export default function ChatPanel({ messages, isTyping, onSendMessage }: ChatPan
       <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
         {messages.map(msg => <MessageBubble key={msg.id} message={msg} />)}
         {isTyping && (
-          <div className="flex items-start gap-2 animate-message">
+          <div className="flex items-start gap-2.5 animate-message">
             <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{
-              background: 'rgba(130,80,223,0.08)', border: '1px solid rgba(130,80,223,0.12)',
+              background: 'rgba(130,80,223,0.07)', border: '1px solid rgba(130,80,223,0.1)',
             }}>
-              <Bot className="w-3.5 h-3.5" style={{ color: 'var(--accent-purple)' }} />
+              <Bot className="w-3 h-3" style={{ color: 'var(--accent-purple)' }} />
             </div>
-            <div className="rounded-2xl rounded-tl-md px-4 py-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)' }}>
-              <div className="flex gap-1 items-center">
-                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--text-quaternary)', animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--text-quaternary)', animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--text-quaternary)', animationDelay: '300ms' }} />
+            <div className="rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)' }}>
+              <div className="flex gap-1.5 items-center h-4">
+                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--accent-purple)', opacity: 0.6, animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--accent-purple)', opacity: 0.6, animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--accent-purple)', opacity: 0.6, animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
@@ -140,22 +140,24 @@ export default function ChatPanel({ messages, isTyping, onSendMessage }: ChatPan
       </div>
 
       {/* Input */}
-      <div className="flex-shrink-0 p-3" style={{ borderTop: '1px solid var(--border-secondary)' }}>
-        <div className="flex items-end gap-2 rounded-xl px-3 py-2 transition-colors duration-200" style={{
+      <div className="flex-shrink-0 p-3" style={{ borderTop: '1px solid var(--border-secondary)', background: 'var(--bg-primary)' }}>
+        <div className="flex items-end gap-2 rounded-xl px-3.5 py-2.5 transition-all duration-200" style={{
           background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)',
+          boxShadow: '0 1px 3px rgba(31,35,40,0.04)',
         }}>
           <textarea ref={textareaRef} value={input}
             onChange={(e) => { setInput(e.target.value); e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px' }}
             onKeyDown={handleKeyDown} placeholder="Message the interviewer..." rows={1}
-            className="flex-1 bg-transparent text-[13px] resize-none outline-none min-h-[24px] max-h-[100px] leading-6"
+            className="flex-1 bg-transparent text-[12.5px] resize-none outline-none min-h-[24px] max-h-[100px] leading-6"
             style={{ color: 'var(--text-primary)' }}
           />
           <button onClick={handleSend} disabled={!input.trim()}
-            className="flex-shrink-0 p-1.5 rounded-lg text-white transition-all duration-150 disabled:opacity-20"
-            style={{ background: 'var(--accent-blue)' }}>
+            className="flex-shrink-0 p-1.5 rounded-lg text-white transition-all duration-200 disabled:opacity-15 active:scale-[0.93]"
+            style={{ background: input.trim() ? 'var(--accent-blue)' : 'var(--border-primary)' }}>
             <Send className="w-3.5 h-3.5" />
           </button>
         </div>
+        <p className="text-[9px] text-center mt-1.5" style={{ color: 'var(--text-quaternary)' }}>Press Enter to send, Shift+Enter for new line</p>
       </div>
     </div>
   )
