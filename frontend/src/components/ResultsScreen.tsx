@@ -90,9 +90,11 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
           </div>
         </div>
 
-        <div className="flex flex-col items-center mb-8 animate-fade-in" style={{ animationDelay: '0.15s' }}>
+        <div className="flex flex-col items-center mb-10 animate-fade-in" style={{ animationDelay: '0.15s' }}>
           <ScoreRing score={score} />
-          <p className="text-sm italic mt-4 max-w-md text-center" style={{ color: 'var(--text-tertiary)' }}>"{result.aiSummary}"</p>
+          <div className="mt-5 max-w-md text-center px-4 py-3 rounded-xl" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-secondary)' }}>
+            <p className="text-[13px] italic leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>"{result.aiSummary}"</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in" style={{ animationDelay: '0.25s' }}>
@@ -172,14 +174,14 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
         {/* Actions */}
         <div className="flex gap-3 animate-fade-in" style={{ animationDelay: '0.5s' }}>
           <button onClick={onReset}
-            className="flex-1 py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
-            style={{ background: 'var(--accent-blue)', boxShadow: '0 1px 3px rgba(9,105,218,0.3)' }}>
-            <RotateCcw className="w-4 h-4" /> Practice Again
+            className="flex-1 py-3.5 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-[0.98] group"
+            style={{ background: 'linear-gradient(135deg, var(--accent-blue), #0550ae)', boxShadow: '0 2px 8px rgba(9,105,218,0.3), 0 1px 2px rgba(9,105,218,0.2)' }}>
+            <RotateCcw className="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" /> Practice Again
           </button>
           <button onClick={handleCopy}
-            className="px-5 py-3 rounded-xl font-medium text-sm flex items-center gap-2 transition-all duration-150"
-            style={{ border: '1px solid var(--border-primary)', color: 'var(--text-tertiary)' }}>
-            {copied ? <><Check className="w-4 h-4" style={{ color: 'var(--accent-blue)' }} /><span style={{ color: 'var(--accent-blue)' }}>Copied</span></> : <><Copy className="w-4 h-4" /> Copy</>}
+            className="px-6 py-3.5 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all duration-200 hover:shadow-card active:scale-[0.98]"
+            style={{ border: '1px solid var(--border-primary)', color: 'var(--text-tertiary)', background: 'var(--bg-secondary)' }}>
+            {copied ? <><Check className="w-4 h-4" style={{ color: 'var(--accent-green)' }} /><span style={{ color: 'var(--accent-green)' }}>Copied!</span></> : <><Copy className="w-4 h-4" /> Copy Results</>}
           </button>
         </div>
       </div>
