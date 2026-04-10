@@ -104,7 +104,7 @@ export default function SetupPanel({ onStart }: SetupPanelProps) {
           </div>
         </div>
 
-        <p className="relative z-10 text-xs text-white/40">Built for developers · No sign-up required</p>
+        <p className="relative z-10 text-[11px] text-white/35 font-medium">Built for developers · No sign-up required</p>
       </div>
 
       {/* Right Form */}

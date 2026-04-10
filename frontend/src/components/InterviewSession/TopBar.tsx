@@ -37,13 +37,13 @@ export default function TopBar({ elapsedSeconds, onInject, onEndSession }: TopBa
 
       <div className="flex items-center gap-2">
         <button onClick={onInject}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:shadow-sm active:scale-[0.97]"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:bg-[rgba(188,76,0,0.12)] active:scale-[0.97] group"
           style={{ background: 'rgba(188,76,0,0.07)', color: 'var(--accent-orange)', border: '1px solid rgba(188,76,0,0.18)' }}>
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-3.5 h-3.5 transition-transform duration-300 group-hover:rotate-12" />
           Inject Chaos
         </button>
         <button onClick={onEndSession}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:shadow-sm active:scale-[0.97]"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:bg-[rgba(207,34,46,0.1)] active:scale-[0.97]"
           style={{ background: 'rgba(207,34,46,0.05)', color: 'var(--accent-severe)', border: '1px solid rgba(207,34,46,0.15)' }}>
           <Square className="w-3 h-3 fill-current" />
           End Session
