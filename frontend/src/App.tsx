@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import SetupPanel from './components/SetupPanel'
-import InterviewSession from './components/InterviewSession'
-import ResultsScreen from './components/ResultsScreen'
-import HistoryScreen from './components/HistoryScreen'
 import MobileWarning from './components/MobileWarning'
+
+// Interview + results carry the Monaco editor and heavy chart code,
+// so split them into their own chunks to keep the initial bundle lean.
+const InterviewSession = lazy(() => import('./components/InterviewSession'))
+const ResultsScreen = lazy(() => import('./components/ResultsScreen'))
+const HistoryScreen = lazy(() => import('./components/HistoryScreen'))
 import { useHistory } from './stores/history'
 import { usePreferences } from './stores/preferences'
 import { useMediaQuery } from './hooks/useMediaQuery'
@@ -102,7 +105,27 @@ export default function App() {
 
   return (
     <PageTransition state={appState}>
-      {renderContent()}
+      <Suspense fallback={<RouteFallback />}>{renderContent()}</Suspense>
     </PageTransition>
+  )
+}
+
+function RouteFallback(): React.ReactElement {
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: 'var(--bg-primary)' }}
+    >
+      <div
+        className="flex items-center gap-3 text-[12px] font-medium"
+        style={{ color: 'var(--text-tertiary)' }}
+      >
+        <div
+          className="w-2 h-2 rounded-full animate-pulse"
+          style={{ background: 'var(--accent-blue)' }}
+        />
+        Loading…
+      </div>
+    </div>
   )
 }
