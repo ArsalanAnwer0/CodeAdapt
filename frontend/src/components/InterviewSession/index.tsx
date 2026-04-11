@@ -5,6 +5,7 @@ import CodeEditor from './CodeEditor'
 import ChatPanel from './ChatPanel'
 import MetricsBar from './MetricsBar'
 import InjectionBanner from './InjectionBanner'
+import WrapUpOverlay from './WrapUpOverlay'
 import KeyboardShortcutsModal from '../KeyboardShortcutsModal'
 import ConfirmEndSessionModal from '../ConfirmEndSessionModal'
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut'
@@ -288,9 +289,11 @@ export default function InterviewSession({
     }
   }, [code, pending, interviewer, playSound])
 
+  const [wrappingUp, setWrappingUp] = useState(false)
   const handleEndSession = useCallback(() => {
     interviewer.dispatch({ type: 'startWrapUp' })
     playSound('wrapUp')
+    setWrappingUp(true)
     const finalMetrics = {
       ...metrics,
       injectionCount: resolvedCount(injections),
@@ -313,7 +316,9 @@ export default function InterviewSession({
       timestamp: new Date(),
     })
     addAIMessage(getClosingFeedback(finalMetrics), 'ai', 'reply')
-    setTimeout(() => onEnd(result), 1000)
+    // Give the wrap-up overlay enough time to read as a moment, not
+    // a flash — the CSS fill completes at 1.1s.
+    setTimeout(() => onEnd(result), 1300)
   }, [
     metrics,
     code,
@@ -403,6 +408,12 @@ export default function InterviewSession({
       </div>
 
       <MetricsBar metrics={metrics} durationSeconds={elapsedSeconds} />
+
+      <WrapUpOverlay
+        open={wrappingUp}
+        persona={persona}
+        resolvedFollowUps={resolvedCount(injections)}
+      />
 
       <KeyboardShortcutsModal
         open={showShortcuts}
