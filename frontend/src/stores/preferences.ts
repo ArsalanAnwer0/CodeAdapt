@@ -16,6 +16,22 @@ export interface Preferences {
   reduceMotion: boolean
   /** Show the problem description panel on session start. */
   showProblemOnStart: boolean
+  /**
+   * Whether the first-run welcome card on the setup screen has been
+   * dismissed. Once true, new sessions skip the explainer.
+   */
+  hasSeenWelcome: boolean
+  /**
+   * Whether the first-run spotlight tour inside the session has been
+   * completed or skipped. Drives whether we render the tour at all.
+   */
+  hasSeenSessionTour: boolean
+  /**
+   * Whether the one-time tooltip explaining the "follow-up" mechanic
+   * has been shown after the first injection lands. Prevents it from
+   * reappearing across sessions.
+   */
+  hasSeenFollowUpTip: boolean
 }
 
 const defaults: Preferences = {
@@ -25,6 +41,9 @@ const defaults: Preferences = {
   soundsEnabled: true,
   reduceMotion: false,
   showProblemOnStart: true,
+  hasSeenWelcome: false,
+  hasSeenSessionTour: false,
+  hasSeenFollowUpTip: false,
 }
 
 export interface UsePreferencesResult {
