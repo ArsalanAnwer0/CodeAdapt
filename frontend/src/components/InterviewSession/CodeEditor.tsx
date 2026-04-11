@@ -75,11 +75,17 @@ export default function CodeEditor({ language, problem, code, onCodeChange, onRu
           style={{ color: 'var(--text-tertiary)', border: '1px solid var(--border-secondary)' }}>
           <RotateCcw className="w-3 h-3" /> Reset
         </button>
+        {/*
+          Run button used to use a blue gradient, which competed with
+          the interviewer persona gradient for attention. Pulling it
+          back to a calm solid fill keeps gradients reserved for
+          interviewer surfaces (header avatar, inline message avatars).
+        */}
         <button onClick={handleRun} disabled={running}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all duration-200 disabled:opacity-50 active:scale-[0.97]"
-          style={{ background: 'linear-gradient(135deg, var(--accent-blue), #0550ae)', boxShadow: '0 1px 3px rgba(9,105,218,0.25)' }}>
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all duration-200 disabled:opacity-50 active:scale-[0.97] hover:brightness-110"
+          style={{ background: 'var(--accent-blue)', boxShadow: '0 1px 2px rgba(9,105,218,0.18)' }}>
           {running ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3 fill-current" />}
-          {running ? 'Running...' : 'Run Code'}
+          {running ? 'Running…' : 'Run'}
         </button>
       </div>
 
