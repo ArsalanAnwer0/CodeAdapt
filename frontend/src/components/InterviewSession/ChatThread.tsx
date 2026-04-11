@@ -261,6 +261,45 @@ function TypingIndicator({
   )
 }
 
+/**
+ * Placeholder shown before the interviewer has sent their opening
+ * message. Without this, the chat column looks broken for the ~800ms
+ * between session start and the first AI bubble landing.
+ */
+function EmptyState({ persona }: { persona: Persona }): React.ReactElement {
+  const [from, to] = persona.gradient
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 text-center">
+      <div
+        className="w-12 h-12 rounded-full flex items-center justify-center text-white avatar-pulse"
+        style={{
+          background: `linear-gradient(135deg, ${from}, ${to})`,
+          boxShadow: '0 2px 8px rgba(1,4,9,0.15)',
+        }}
+        aria-hidden="true"
+      >
+        <span className="text-[11px] font-bold tracking-wide">
+          {persona.initials}
+        </span>
+      </div>
+      <div>
+        <p
+          className="text-[12px] font-semibold mb-0.5"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          {persona.name} is joining the room…
+        </p>
+        <p
+          className="text-[11px] leading-relaxed"
+          style={{ color: 'var(--text-quaternary)' }}
+        >
+          Your interviewer will open with a question in a moment.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 function ChatThreadImpl({
   messages,
   persona,
@@ -271,6 +310,10 @@ function ChatThreadImpl({
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
+
+  if (messages.length === 0 && !isTyping) {
+    return <EmptyState persona={persona} />
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 min-h-0">
