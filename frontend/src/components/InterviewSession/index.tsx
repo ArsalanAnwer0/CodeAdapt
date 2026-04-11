@@ -1,14 +1,22 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import TopBar from './TopBar'
 import ProblemPanel from './ProblemPanel'
 import CodeEditor from './CodeEditor'
 import ChatPanel from './ChatPanel'
 import MetricsBar from './MetricsBar'
+import InjectionBanner from './InjectionBanner'
 import KeyboardShortcutsModal from '../KeyboardShortcutsModal'
 import ConfirmEndSessionModal from '../ConfirmEndSessionModal'
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut'
 import { formatDurationHuman } from '../../lib/format'
 import { useTheme } from '../../theme/ThemeProvider'
+import { pickPersona } from './persona'
+import { useInterviewer } from './useInterviewer'
+import {
+  pendingInjection,
+  resolveLatest,
+  resolvedCount,
+} from './injectionHelpers'
 import {
   SessionConfig,
   ChatMessage,
@@ -39,16 +47,33 @@ interface InterviewSessionProps {
   onEnd: (result: SessionResult) => void
 }
 
-export default function InterviewSession({ config, onEnd }: InterviewSessionProps) {
+export default function InterviewSession({
+  config,
+  onEnd,
+}: InterviewSessionProps) {
   const { toggle: toggleTheme } = useTheme()
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showConfirmEnd, setShowConfirmEnd] = useState(false)
-  const [problem] = useState<Problem>(() => getRandomProblem(config.topic, config.difficulty))
+  const [problem] = useState<Problem>(() =>
+    getRandomProblem(config.topic, config.difficulty)
+  )
   const [code, setCode] = useState(() => problem.starterCode[config.language])
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [injections, setInjections] = useState<Injection[]>([])
-  const [isTyping, setIsTyping] = useState(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
+
+  // A stable persona per session so the candidate always sees the
+  // same interviewer across reloads (deterministic seed).
+  const persona = useMemo(
+    () => pickPersona(`${config.topic}-${config.difficulty}-${problem.id}`),
+    [config.topic, config.difficulty, problem.id]
+  )
+
+  // Single source of truth for "what is the interviewer doing right
+  // now" — feeds the header, typing dots, avatar glow, and later the
+  // code-reading sweep.
+  const interviewer = useInterviewer()
+
   const [metrics, setMetrics] = useState<SessionMetrics>({
     adaptabilityScore: 70,
     problemsSolved: 0,
@@ -62,98 +87,174 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
   ])
 
   const elapsedRef = useRef(0)
-  const lastInjectionTime = useRef<number | null>(null)
   const lastUserMessageTime = useRef<number | null>(null)
   const userMessageCount = useRef(0)
   const openingMessageSent = useRef(false)
+
+  // Derived: the single pending follow-up (if any). Drives the sticky
+  // banner, the chat dim, and wrap-up eligibility.
+  const pending = useMemo(() => pendingInjection(injections), [injections])
 
   useEffect(() => {
     const timer = setInterval(() => {
       elapsedRef.current += 1
       setElapsedSeconds((prev) => prev + 1)
-      setMetrics((prev) => ({ ...prev, timeRemaining: Math.max(0, prev.timeRemaining - 1) }))
+      setMetrics((prev) => ({
+        ...prev,
+        timeRemaining: Math.max(0, prev.timeRemaining - 1),
+      }))
     }, 1000)
     return () => clearInterval(timer)
   }, [])
 
+  // Slow adaptability decay while a follow-up sits unaddressed.
   useEffect(() => {
     const checker = setInterval(() => {
-      if (lastInjectionTime.current !== null) {
-        const since = elapsedRef.current - lastInjectionTime.current
+      const injAt = interviewer.injectionElapsedAt()
+      if (injAt !== null) {
+        const since = elapsedRef.current - injAt
         if (since > 120 && since % 30 === 0) {
-          setMetrics((prev) => ({ ...prev, adaptabilityScore: Math.max(10, prev.adaptabilityScore - 2) }))
+          setMetrics((prev) => ({
+            ...prev,
+            adaptabilityScore: Math.max(10, prev.adaptabilityScore - 2),
+          }))
         }
       }
     }, 1000)
     return () => clearInterval(checker)
+  }, [interviewer])
+
+  const addMessage = useCallback((msg: ChatMessage) => {
+    setMessages((prev) => [...prev, msg])
   }, [])
+
+  const addAIMessage = useCallback(
+    (
+      content: string,
+      role: ChatMessage['role'] = 'ai',
+      kind?: ChatMessage['kind']
+    ) => {
+      addMessage({
+        id: generateId(),
+        role,
+        content,
+        timestamp: new Date(),
+        kind,
+      })
+    },
+    [addMessage]
+  )
 
   useEffect(() => {
     if (openingMessageSent.current) return
     openingMessageSent.current = true
+    interviewer.dispatch({ type: 'startGreeting' })
     const timer = setTimeout(() => {
-      addAIMessage(getOpeningMessage(config, problem))
+      addAIMessage(getOpeningMessage(config, problem), 'ai', 'question')
+      interviewer.dispatch({ type: 'settle' })
     }, 800)
     return () => clearTimeout(timer)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const addMessage = useCallback((msg: ChatMessage) => { setMessages((prev) => [...prev, msg]) }, [])
-
-  const addAIMessage = useCallback((content: string, role: ChatMessage['role'] = 'ai') => {
-    addMessage({ id: generateId(), role, content, timestamp: new Date() })
-  }, [addMessage])
-
-  const handleSendMessage = useCallback((content: string) => {
-    addMessage({ id: generateId(), role: 'user', content, timestamp: new Date() })
-    userMessageCount.current += 1
-    const now = elapsedRef.current
-
-    if (lastInjectionTime.current !== null) {
-      const responseTime = now - lastInjectionTime.current
-      if (responseTime < 180) {
-        setMetrics((prev) => ({ ...prev, adaptabilityScore: Math.min(100, prev.adaptabilityScore + 5) }))
-      }
-      lastInjectionTime.current = null
-    }
-
-    if (lastUserMessageTime.current !== null) {
-      const delta = (now - lastUserMessageTime.current) / 60
-      setMetrics((prev) => {
-        const count = userMessageCount.current
-        return { ...prev, avgResponseTime: (prev.avgResponseTime * (count - 1) + delta) / count }
+  const handleSendMessage = useCallback(
+    (content: string) => {
+      addMessage({
+        id: generateId(),
+        role: 'user',
+        content,
+        timestamp: new Date(),
       })
-    }
-    lastUserMessageTime.current = now
+      userMessageCount.current += 1
+      const now = elapsedRef.current
 
-    setIsTyping(true)
-    setTimeout(() => {
-      setIsTyping(false)
-      addAIMessage(getResponseToUserMessage(content, problem, code))
-    }, 1000 + Math.random() * 1500)
-  }, [addMessage, addAIMessage, problem, code])
+      const injAt = interviewer.injectionElapsedAt()
+      if (injAt !== null) {
+        const responseTime = now - injAt
+        if (responseTime < 180) {
+          setMetrics((prev) => ({
+            ...prev,
+            adaptabilityScore: Math.min(100, prev.adaptabilityScore + 5),
+          }))
+        }
+        interviewer.clearInjection()
+        // Mark the pending follow-up resolved so the banner disappears
+        // and the chat un-dims.
+        setInjections((prev) => resolveLatest(prev, new Date()))
+      }
+
+      if (lastUserMessageTime.current !== null) {
+        const delta = (now - lastUserMessageTime.current) / 60
+        setMetrics((prev) => {
+          const count = userMessageCount.current
+          return {
+            ...prev,
+            avgResponseTime:
+              (prev.avgResponseTime * (count - 1) + delta) / count,
+          }
+        })
+      }
+      lastUserMessageTime.current = now
+
+      interviewer.dispatch({ type: 'startThinking' })
+      setTimeout(() => {
+        interviewer.dispatch({ type: 'settle' })
+        addAIMessage(
+          getResponseToUserMessage(content, problem, code),
+          'ai',
+          'reply'
+        )
+      }, 1000 + Math.random() * 1500)
+    },
+    [addMessage, addAIMessage, problem, code, interviewer]
+  )
 
   const handleInject = useCallback(() => {
     const injection = getRandomInjection()
-    const inj: Injection = { id: generateId(), content: injection.content, timestamp: new Date(), type: injection.type }
+    const inj: Injection = {
+      id: generateId(),
+      content: injection.content,
+      timestamp: new Date(),
+      type: injection.type,
+    }
 
     setInjections((prev) => [...prev, inj])
-    setMetrics((prev) => ({ ...prev, injectionCount: prev.injectionCount + 1, adaptabilityScore: Math.max(10, prev.adaptabilityScore - 5) }))
-    lastInjectionTime.current = elapsedRef.current
+    setMetrics((prev) => ({
+      ...prev,
+      injectionCount: prev.injectionCount + 1,
+      adaptabilityScore: Math.max(10, prev.adaptabilityScore - 5),
+    }))
+    interviewer.markInjectionAt(elapsedRef.current)
+    interviewer.dispatch({ type: 'startFollowUp', injectionId: inj.id })
 
-    setTimeline((prev) => [...prev, { type: 'injection', label: injection.type === 'bug' ? 'Bug Injected' : 'Req Changed', time: elapsedRef.current }])
-    addMessage({ id: generateId(), role: 'injection', content: injection.content, timestamp: new Date() })
+    setTimeline((prev) => [
+      ...prev,
+      {
+        type: 'injection',
+        label: injection.type === 'bug' ? 'Bug Injected' : 'Req Changed',
+        time: elapsedRef.current,
+      },
+    ])
+    addMessage({
+      id: generateId(),
+      role: 'injection',
+      content: injection.content,
+      timestamp: new Date(),
+    })
 
     setTimeout(() => {
-      setIsTyping(true)
+      interviewer.dispatch({ type: 'startThinking' })
       setTimeout(() => {
-        setIsTyping(false)
-        addAIMessage(getInjectionFollowUp(inj))
+        interviewer.dispatch({ type: 'settle' })
+        addAIMessage(getInjectionFollowUp(inj), 'ai', 'follow-up')
       }, 1500)
     }, 500)
-  }, [addMessage, addAIMessage])
+  }, [addMessage, addAIMessage, interviewer])
 
   const handleRun = useCallback(() => {
-    setTimeline((prev) => [...prev, { type: 'submission', label: 'Code Run', time: elapsedRef.current }])
+    setTimeline((prev) => [
+      ...prev,
+      { type: 'submission', label: 'Code Run', time: elapsedRef.current },
+    ])
     if (code.trim().length > 200) {
       setMetrics((prev) => ({
         ...prev,
@@ -161,10 +262,19 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
         adaptabilityScore: Math.min(100, prev.adaptabilityScore + 3),
       }))
     }
-  }, [code])
+    // A run after an injection counts as addressing the follow-up.
+    if (pending) {
+      setInjections((prev) => resolveLatest(prev, new Date()))
+      interviewer.clearInjection()
+    }
+  }, [code, pending, interviewer])
 
   const handleEndSession = useCallback(() => {
-    const finalMetrics = { ...metrics }
+    interviewer.dispatch({ type: 'startWrapUp' })
+    const finalMetrics = {
+      ...metrics,
+      injectionCount: resolvedCount(injections),
+    }
     const result: SessionResult = {
       config,
       metrics: finalMetrics,
@@ -176,10 +286,26 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
       timeline,
       aiSummary: generateAISummary(finalMetrics),
     }
-    addMessage({ id: generateId(), role: 'system', content: 'Session ended', timestamp: new Date() })
-    addAIMessage(getClosingFeedback(finalMetrics))
+    addMessage({
+      id: generateId(),
+      role: 'system',
+      content: 'Session ended',
+      timestamp: new Date(),
+    })
+    addAIMessage(getClosingFeedback(finalMetrics), 'ai', 'reply')
     setTimeout(() => onEnd(result), 1000)
-  }, [metrics, code, messages, injections, timeline, config, onEnd, addMessage, addAIMessage])
+  }, [
+    metrics,
+    code,
+    messages,
+    injections,
+    timeline,
+    config,
+    onEnd,
+    addMessage,
+    addAIMessage,
+    interviewer,
+  ])
 
   // Global keyboard shortcuts for power users.
   useKeyboardShortcut('mod+i', () => handleInject())
@@ -189,8 +315,13 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
     setShowShortcuts((prev) => !prev)
   )
 
+  const dimChat = Boolean(pending)
+
   return (
-    <div className="flex flex-col h-screen overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
+    <div
+      className="flex flex-col h-screen overflow-hidden"
+      style={{ background: 'var(--bg-secondary)' }}
+    >
       <TopBar
         elapsedSeconds={elapsedSeconds}
         onInject={handleInject}
@@ -198,19 +329,54 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
       />
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        {/* Left: Problem — 22% */}
-        <div className="flex-none overflow-hidden" style={{ width: '22%', borderRight: '1px solid var(--border-secondary)', minWidth: '240px' }}>
+        {/* Left: Problem — 20% */}
+        <div
+          className="flex-none overflow-hidden"
+          style={{
+            width: '20%',
+            borderRight: '1px solid var(--border-secondary)',
+            minWidth: '240px',
+          }}
+        >
           <ProblemPanel problem={problem} injections={injections} />
         </div>
 
-        {/* Center: Code Editor — 50% */}
-        <div className="flex-1 overflow-hidden" style={{ borderRight: '1px solid var(--border-secondary)', minWidth: '400px' }}>
-          <CodeEditor language={config.language} problem={problem} code={code} onCodeChange={setCode} onRun={handleRun} />
+        {/* Center: Code Editor + sticky InjectionBanner — 48% */}
+        <div
+          className="flex-1 flex flex-col overflow-hidden"
+          style={{
+            borderRight: '1px solid var(--border-secondary)',
+            minWidth: '400px',
+          }}
+        >
+          <InjectionBanner injection={pending} />
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <CodeEditor
+              language={config.language}
+              problem={problem}
+              code={code}
+              onCodeChange={setCode}
+              onRun={handleRun}
+            />
+          </div>
         </div>
 
-        {/* Right: Chat — 28% */}
-        <div className="flex-none overflow-hidden" style={{ width: '28%', minWidth: '280px' }}>
-          <ChatPanel messages={messages} isTyping={isTyping} onSendMessage={handleSendMessage} />
+        {/* Right: Chat — 32% */}
+        <div
+          className={`flex-none overflow-hidden ${dimChat ? 'chat-dim' : ''}`}
+          style={{ width: '32%', minWidth: '300px' }}
+        >
+          <ChatPanel
+            messages={messages}
+            isTyping={interviewer.isTyping}
+            onSendMessage={handleSendMessage}
+            persona={persona}
+            interviewerState={interviewer.state}
+            onComposerFocus={() =>
+              interviewer.dispatch({ type: 'startListening' })
+            }
+            onComposerBlur={() => interviewer.dispatch({ type: 'settle' })}
+          />
         </div>
       </div>
 
@@ -230,7 +396,7 @@ export default function InterviewSession({ config, onEnd }: InterviewSessionProp
               {formatDurationHuman(elapsedSeconds)}
             </strong>{' '}
             elapsed · {messages.length} messages · {injections.length}{' '}
-            injections
+            follow-ups
           </>
         }
       />
