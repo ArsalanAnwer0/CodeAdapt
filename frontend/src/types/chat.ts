@@ -35,4 +35,11 @@ export interface Injection {
   content: string
   timestamp: Date
   type: InjectionType
+  /**
+   * When the candidate addressed this injection (by sending a reply or
+   * shipping a code run after it landed). `undefined` means the
+   * follow-up is still pending, which the sticky InjectionBanner reads
+   * to decide whether it should be visible.
+   */
+  resolvedAt?: Date
 }
