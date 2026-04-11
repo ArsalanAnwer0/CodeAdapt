@@ -218,6 +218,116 @@ body {
 .animate-inject-glow { animation: injectGlow 0.6s ease-out; }
 .animate-breathe { animation: breathe 3s ease-in-out infinite; }
 
+/* Interviewer header card */
+.interviewer-card {
+  position: relative;
+  background: linear-gradient(180deg, var(--bg-secondary), transparent);
+  border-bottom: 1px solid var(--border-secondary);
+  box-shadow: var(--shadow-sm);
+}
+.interviewer-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+  opacity: 0.9;
+}
+
+/* Avatar breathing glow used while the interviewer is busy. */
+.avatar-pulse {
+  box-shadow: 0 0 0 0 rgba(9, 105, 218, 0);
+  animation: avatarBreathe 1.8s ease-in-out infinite;
+}
+@keyframes avatarBreathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(9, 105, 218, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(9, 105, 218, 0.18); }
+}
+
+/* Three-dot typing indicator. */
+.typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.typing-dots > span {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--text-tertiary);
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+.typing-dots > span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots > span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30%           { transform: translateY(-3px); opacity: 1; }
+}
+
+/* Injection arrival choreography. */
+.injection-banner {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(188, 76, 0, 0.08),
+    rgba(130, 80, 223, 0.06)
+  );
+  border: 1px solid rgba(188, 76, 0, 0.22);
+  border-left: 3px solid var(--accent-orange);
+  animation: injectionArrive 420ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
+}
+@keyframes injectionArrive {
+  0% {
+    transform: translateY(-8px);
+    opacity: 0;
+    box-shadow: 0 0 0 0 rgba(188, 76, 0, 0.35);
+  }
+  60% {
+    box-shadow: 0 0 0 10px rgba(188, 76, 0, 0);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(188, 76, 0, 0);
+  }
+}
+
+/* Chat dims while an injection is unresolved to focus the banner. */
+.chat-dim > *:not(.injection-banner):not(.chat-composer):not(.interviewer-card) {
+  opacity: 0.55;
+  transition: opacity 200ms ease;
+}
+
+/* Editor code-reading sweep. */
+.code-sweep {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.code-sweep::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -2px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(9, 105, 218, 0.35),
+    transparent
+  );
+  animation: codeSweepMove 700ms ease-in-out forwards;
+}
+@keyframes codeSweepMove {
+  0%   { transform: translateY(0); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
 /* Confetti */
 @keyframes confetti-fall {
   0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 0; }
