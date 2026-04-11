@@ -2,6 +2,7 @@ import React, { memo } from 'react'
 import { Brain, CheckCircle2, Zap, Timer, Clock } from 'lucide-react'
 import { SessionMetrics } from '../../types'
 import { useCountUpInt } from '../../hooks/useCountUp'
+import Tooltip from '../ui/Tooltip'
 
 interface MetricsBarProps {
   metrics: SessionMetrics
@@ -26,38 +27,46 @@ function MetricsBar({ metrics }: MetricsBarProps) {
   return (
     <div className="flex-shrink-0 flex items-center h-10 px-2 glass" style={{ borderTop: '1px solid var(--border-secondary)', boxShadow: '0 -1px 3px rgba(1,4,9,0.08)' }}>
       {/* Adaptability */}
-      <div className="flex items-center gap-1.5 px-3 text-[11px]">
-        <Brain className="w-3.5 h-3.5" style={{ color: scoreColor }} />
-        <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Adapt</span>
-        <span className="font-bold" style={{ color: scoreColor, fontVariantNumeric: 'tabular-nums' }}>{adapt}</span>
-        <div className="w-14 h-1.5 rounded-full overflow-hidden ml-0.5" style={{ background: 'var(--bg-tertiary)' }}>
-          <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${metrics.adaptabilityScore}%`, background: scoreColor }} />
+      <Tooltip label="Adaptability — how quickly you respond to follow-ups">
+        <div className="flex items-center gap-1.5 px-3 text-[11px] cursor-default">
+          <Brain className="w-3.5 h-3.5" style={{ color: scoreColor }} />
+          <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Adapt</span>
+          <span className="font-bold" style={{ color: scoreColor, fontVariantNumeric: 'tabular-nums' }}>{adapt}</span>
+          <div className="w-14 h-1.5 rounded-full overflow-hidden ml-0.5" style={{ background: 'var(--bg-tertiary)' }}>
+            <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${metrics.adaptabilityScore}%`, background: scoreColor }} />
+          </div>
         </div>
-      </div>
+      </Tooltip>
 
       <div className="w-px h-4" style={{ background: 'var(--border-secondary)' }} />
 
-      <div className="flex items-center gap-1.5 px-3 text-[11px]">
-        <CheckCircle2 className="w-3.5 h-3.5" style={{ color: metrics.problemsSolved > 0 ? 'var(--accent-green)' : 'var(--text-quaternary)' }} />
-        <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Solved</span>
-        <span className="font-bold" style={{ color: metrics.problemsSolved > 0 ? 'var(--accent-green)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{solved}/{metrics.totalProblems}</span>
-      </div>
+      <Tooltip label="Problems solved in this session">
+        <div className="flex items-center gap-1.5 px-3 text-[11px] cursor-default">
+          <CheckCircle2 className="w-3.5 h-3.5" style={{ color: metrics.problemsSolved > 0 ? 'var(--accent-green)' : 'var(--text-quaternary)' }} />
+          <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Solved</span>
+          <span className="font-bold" style={{ color: metrics.problemsSolved > 0 ? 'var(--accent-green)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{solved}/{metrics.totalProblems}</span>
+        </div>
+      </Tooltip>
 
       <div className="w-px h-4" style={{ background: 'var(--border-secondary)' }} />
 
-      <div className="flex items-center gap-1.5 px-3 text-[11px]">
-        <Zap className="w-3.5 h-3.5" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-quaternary)' }} />
-        <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Follow-ups</span>
-        <span className="font-bold" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{followUps}</span>
-      </div>
+      <Tooltip label="Follow-ups the interviewer has pushed this session">
+        <div className="flex items-center gap-1.5 px-3 text-[11px] cursor-default">
+          <Zap className="w-3.5 h-3.5" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-quaternary)' }} />
+          <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Follow-ups</span>
+          <span className="font-bold" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{followUps}</span>
+        </div>
+      </Tooltip>
 
       <div className="w-px h-4" style={{ background: 'var(--border-secondary)' }} />
 
-      <div className="flex items-center gap-1.5 px-3 text-[11px]">
-        <Timer className="w-3.5 h-3.5" style={{ color: 'var(--text-quaternary)' }} />
-        <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Avg</span>
-        <span className="font-bold" style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{metrics.avgResponseTime.toFixed(1)}m</span>
-      </div>
+      <Tooltip label="Average time between your chat replies">
+        <div className="flex items-center gap-1.5 px-3 text-[11px] cursor-default">
+          <Timer className="w-3.5 h-3.5" style={{ color: 'var(--text-quaternary)' }} />
+          <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Avg</span>
+          <span className="font-bold" style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{metrics.avgResponseTime.toFixed(1)}m</span>
+        </div>
+      </Tooltip>
 
       <div className="flex-1" />
 
