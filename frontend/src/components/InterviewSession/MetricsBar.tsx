@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import { Brain, CheckCircle2, Zap, Timer, Clock } from 'lucide-react'
 import { SessionMetrics } from '../../types'
+import { useCountUpInt } from '../../hooks/useCountUp'
 
 interface MetricsBarProps {
   metrics: SessionMetrics
@@ -16,6 +17,11 @@ function formatTime(seconds: number): string {
 function MetricsBar({ metrics }: MetricsBarProps) {
   const isLowTime = metrics.timeRemaining <= 300
   const scoreColor = metrics.adaptabilityScore >= 70 ? 'var(--accent-blue)' : metrics.adaptabilityScore >= 40 ? 'var(--accent-amber)' : 'var(--accent-orange)'
+  // Animated numbers so score/follow-up changes read as events rather
+  // than silent swaps. The hook honors prefers-reduced-motion.
+  const adapt = useCountUpInt(metrics.adaptabilityScore)
+  const solved = useCountUpInt(metrics.problemsSolved)
+  const followUps = useCountUpInt(metrics.injectionCount)
 
   return (
     <div className="flex-shrink-0 flex items-center h-10 px-2 glass" style={{ borderTop: '1px solid var(--border-secondary)', boxShadow: '0 -1px 3px rgba(1,4,9,0.08)' }}>
@@ -23,7 +29,7 @@ function MetricsBar({ metrics }: MetricsBarProps) {
       <div className="flex items-center gap-1.5 px-3 text-[11px]">
         <Brain className="w-3.5 h-3.5" style={{ color: scoreColor }} />
         <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Adapt</span>
-        <span className="font-bold" style={{ color: scoreColor, fontVariantNumeric: 'tabular-nums' }}>{metrics.adaptabilityScore}</span>
+        <span className="font-bold" style={{ color: scoreColor, fontVariantNumeric: 'tabular-nums' }}>{adapt}</span>
         <div className="w-14 h-1.5 rounded-full overflow-hidden ml-0.5" style={{ background: 'var(--bg-tertiary)' }}>
           <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${metrics.adaptabilityScore}%`, background: scoreColor }} />
         </div>
@@ -34,7 +40,7 @@ function MetricsBar({ metrics }: MetricsBarProps) {
       <div className="flex items-center gap-1.5 px-3 text-[11px]">
         <CheckCircle2 className="w-3.5 h-3.5" style={{ color: metrics.problemsSolved > 0 ? 'var(--accent-green)' : 'var(--text-quaternary)' }} />
         <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Solved</span>
-        <span className="font-bold" style={{ color: metrics.problemsSolved > 0 ? 'var(--accent-green)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{metrics.problemsSolved}/{metrics.totalProblems}</span>
+        <span className="font-bold" style={{ color: metrics.problemsSolved > 0 ? 'var(--accent-green)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{solved}/{metrics.totalProblems}</span>
       </div>
 
       <div className="w-px h-4" style={{ background: 'var(--border-secondary)' }} />
@@ -42,7 +48,7 @@ function MetricsBar({ metrics }: MetricsBarProps) {
       <div className="flex items-center gap-1.5 px-3 text-[11px]">
         <Zap className="w-3.5 h-3.5" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-quaternary)' }} />
         <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Follow-ups</span>
-        <span className="font-bold" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{metrics.injectionCount}</span>
+        <span className="font-bold" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{followUps}</span>
       </div>
 
       <div className="w-px h-4" style={{ background: 'var(--border-secondary)' }} />
