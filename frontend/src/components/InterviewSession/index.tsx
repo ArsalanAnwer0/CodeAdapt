@@ -105,6 +105,28 @@ export default function InterviewSession({
 
   const composerRef = useRef<ChatComposerHandle>(null)
   const elapsedRef = useRef(0)
+  /**
+   * Tracks every pending `setTimeout` the session owns so we can
+   * cancel them on unmount. Without this, a timer scheduled for
+   * `settle` or `addAIMessage` can fire after the component has
+   * already unmounted, which both leaks memory and (previously) was
+   * one of the hairier classes of bugs when the user clicked "End
+   * session" before the interviewer had finished thinking.
+   */
+  const pendingTimers = useRef<Set<number>>(new Set())
+  const schedule = useCallback((fn: () => void, ms: number): void => {
+    const id = window.setTimeout(() => {
+      pendingTimers.current.delete(id)
+      fn()
+    }, ms)
+    pendingTimers.current.add(id)
+  }, [])
+  useEffect(() => {
+    return () => {
+      pendingTimers.current.forEach((id) => window.clearTimeout(id))
+      pendingTimers.current.clear()
+    }
+  }, [])
   const lastUserMessageTime = useRef<number | null>(null)
   const userMessageCount = useRef(0)
   const openingMessageSent = useRef(false)
@@ -216,7 +238,7 @@ export default function InterviewSession({
       lastUserMessageTime.current = now
 
       interviewer.dispatch({ type: 'startThinking' })
-      setTimeout(() => {
+      schedule(() => {
         interviewer.dispatch({ type: 'settle' })
         addAIMessage(
           getResponseToUserMessage(content, problem, code),
@@ -226,7 +248,7 @@ export default function InterviewSession({
         playSound('messageIn')
       }, 1000 + Math.random() * 1500)
     },
-    [addMessage, addAIMessage, problem, code, interviewer, playSound]
+    [addMessage, addAIMessage, problem, code, interviewer, playSound, schedule]
   )
 
   const handleInject = useCallback(() => {
@@ -275,15 +297,22 @@ export default function InterviewSession({
     // Reading the code → thinking → follow-up. The two timeouts are
     // what the sweep + typing dots hang off of, so leaving them as
     // siblings of the state transitions keeps everything legible.
-    setTimeout(() => {
+    schedule(() => {
       interviewer.dispatch({ type: 'startThinking' })
-      setTimeout(() => {
+      schedule(() => {
         interviewer.dispatch({ type: 'settle' })
         addAIMessage(getInjectionFollowUp(inj), 'ai', 'follow-up')
         playSound('messageIn')
       }, 1500)
     }, 900)
-  }, [addMessage, addAIMessage, interviewer, playSound, preferences.hasSeenFollowUpTip])
+  }, [
+    addMessage,
+    addAIMessage,
+    interviewer,
+    playSound,
+    preferences.hasSeenFollowUpTip,
+    schedule,
+  ])
 
   const handleRun = useCallback(() => {
     setTimeline((prev) => [
@@ -334,7 +363,7 @@ export default function InterviewSession({
     addAIMessage(getClosingFeedback(finalMetrics), 'ai', 'reply')
     // Give the wrap-up overlay enough time to read as a moment, not
     // a flash — the CSS fill completes at 1.1s.
-    setTimeout(() => onEnd(result), 1300)
+    schedule(() => onEnd(result), 1300)
   }, [
     metrics,
     code,
@@ -347,6 +376,7 @@ export default function InterviewSession({
     addAIMessage,
     interviewer,
     playSound,
+    schedule,
   ])
 
   // Global keyboard shortcuts for power users.
