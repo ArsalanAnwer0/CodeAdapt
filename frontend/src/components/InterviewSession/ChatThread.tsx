@@ -1,0 +1,238 @@
+import React, { memo, useEffect, useRef } from 'react'
+import { Zap } from 'lucide-react'
+import { ChatMessage } from '../../types'
+import type { Persona } from './persona'
+
+export interface ChatThreadProps {
+  messages: ChatMessage[]
+  persona: Persona
+  /** Show the animated typing indicator at the tail of the thread. */
+  isTyping: boolean
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+/**
+ * System chip (e.g. "Session ended"). Centered, muted, non-intrusive.
+ */
+function SystemBubble({ message }: { message: ChatMessage }): React.ReactElement {
+  return (
+    <div className="flex justify-center animate-message py-1.5">
+      <span
+        className="text-[10px] font-medium px-3 py-1 rounded-full"
+        style={{
+          color: 'var(--text-quaternary)',
+          background: 'var(--bg-tertiary)',
+          border: '1px solid var(--border-secondary)',
+        }}
+      >
+        {message.content}
+      </span>
+    </div>
+  )
+}
+
+/**
+ * Inline follow-up card shown in-thread when a chaos injection fires.
+ * The sticky banner above the thread is the primary surface; this keeps
+ * the history complete so the transcript reads linearly after the fact.
+ */
+function InjectionBubble({
+  message,
+}: {
+  message: ChatMessage
+}): React.ReactElement {
+  return (
+    <div
+      className="animate-message animate-inject-glow mx-1 rounded-xl p-3.5"
+      style={{
+        background: 'rgba(188,76,0,0.05)',
+        border: '1px solid rgba(188,76,0,0.12)',
+        borderLeft: '3px solid var(--accent-orange)',
+      }}
+    >
+      <div className="flex items-center gap-1.5 mb-2">
+        <Zap
+          className="w-3.5 h-3.5 fill-current"
+          style={{ color: 'var(--accent-orange)' }}
+        />
+        <span
+          className="text-[10px] font-bold uppercase tracking-wider"
+          style={{ color: 'var(--accent-orange)' }}
+        >
+          Follow-up
+        </span>
+        <span
+          className="ml-auto text-[9px] font-mono"
+          style={{ color: 'var(--text-quaternary)' }}
+        >
+          {formatTime(message.timestamp)}
+        </span>
+      </div>
+      <p
+        className="text-[12px] leading-relaxed"
+        style={{ color: 'var(--text-secondary)' }}
+      >
+        {message.content}
+      </p>
+    </div>
+  )
+}
+
+function UserBubble({ message }: { message: ChatMessage }): React.ReactElement {
+  return (
+    <div className="flex justify-end animate-message">
+      <div style={{ maxWidth: '82%' }}>
+        <div
+          className="rounded-2xl rounded-br-sm px-3.5 py-2.5"
+          style={{
+            background: 'rgba(9,105,218,0.07)',
+            border: '1px solid rgba(9,105,218,0.1)',
+          }}
+        >
+          <p
+            className="text-[12.5px] leading-relaxed whitespace-pre-wrap"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {message.content}
+          </p>
+        </div>
+        <p
+          className="text-[9px] font-mono mt-1 text-right pr-1"
+          style={{ color: 'var(--text-quaternary)' }}
+        >
+          {formatTime(message.timestamp)}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function AIBubble({
+  message,
+  persona,
+}: {
+  message: ChatMessage
+  persona: Persona
+}): React.ReactElement {
+  const [from, to] = persona.gradient
+  return (
+    <div className="flex items-start gap-2.5 animate-message">
+      <div
+        className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 text-white"
+        style={{
+          background: `linear-gradient(135deg, ${from}, ${to})`,
+          boxShadow: '0 1px 2px rgba(1,4,9,0.2)',
+        }}
+        aria-hidden="true"
+      >
+        <span className="text-[8px] font-bold tracking-wide">
+          {persona.initials}
+        </span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div
+          className="rounded-2xl rounded-tl-sm px-3.5 py-2.5"
+          style={{
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border-secondary)',
+            borderLeft: '2px solid var(--accent-purple)',
+          }}
+        >
+          <p
+            className="text-[12.5px] leading-[1.65] whitespace-pre-wrap"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            {message.content}
+          </p>
+        </div>
+        <p
+          className="text-[9px] font-mono mt-1 pl-1"
+          style={{ color: 'var(--text-quaternary)' }}
+        >
+          {formatTime(message.timestamp)}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Three-dot typing indicator appended to the thread while the
+ * interviewer is composing. Uses the shared `.typing-dots` class so
+ * the animation stays in sync with any other indicators in the UI.
+ */
+function TypingIndicator({
+  persona,
+}: {
+  persona: Persona
+}): React.ReactElement {
+  const [from, to] = persona.gradient
+  return (
+    <div className="flex items-start gap-2.5 animate-message">
+      <div
+        className="w-6 h-6 rounded-full flex items-center justify-center text-white"
+        style={{
+          background: `linear-gradient(135deg, ${from}, ${to})`,
+          boxShadow: '0 1px 2px rgba(1,4,9,0.2)',
+        }}
+        aria-hidden="true"
+      >
+        <span className="text-[8px] font-bold tracking-wide">
+          {persona.initials}
+        </span>
+      </div>
+      <div
+        className="rounded-2xl rounded-tl-sm px-3.5 py-3"
+        style={{
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-secondary)',
+        }}
+        aria-label={`${persona.name} is typing`}
+        role="status"
+      >
+        <span className="typing-dots">
+          <span />
+          <span />
+          <span />
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function ChatThreadImpl({
+  messages,
+  persona,
+  isTyping,
+}: ChatThreadProps): React.ReactElement {
+  const endRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, isTyping])
+
+  return (
+    <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 min-h-0">
+      {messages.map((msg) => {
+        switch (msg.role) {
+          case 'system':
+            return <SystemBubble key={msg.id} message={msg} />
+          case 'injection':
+            return <InjectionBubble key={msg.id} message={msg} />
+          case 'user':
+            return <UserBubble key={msg.id} message={msg} />
+          default:
+            return <AIBubble key={msg.id} message={msg} persona={persona} />
+        }
+      })}
+      {isTyping && <TypingIndicator persona={persona} />}
+      <div ref={endRef} />
+    </div>
+  )
+}
+
+const ChatThread = memo(ChatThreadImpl)
+export default ChatThread
