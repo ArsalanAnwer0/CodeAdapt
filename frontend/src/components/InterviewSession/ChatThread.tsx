@@ -1,7 +1,8 @@
-import React, { memo, useEffect, useRef } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 import { Zap, HelpCircle, Eye, ArrowRight, MessageCircle } from 'lucide-react'
 import { ChatMessage, AIMessageKind } from '../../types'
 import type { Persona } from './persona'
+import { streamText, autoTickMs } from '../../lib/stream'
 
 /**
  * Visual treatment per AI message kind. Keeping this as a pure lookup
@@ -149,6 +150,30 @@ function UserBubble({ message }: { message: ChatMessage }): React.ReactElement {
   )
 }
 
+/**
+ * Progressively reveals an AI message's content on first mount.
+ *
+ * This is the "client-side streaming" seam described in lib/stream.ts
+ * — when the real backend starts sending token chunks over the wire,
+ * this hook is where we'll swap in the network stream instead of
+ * ticking a local timer. Until then, it at least makes AI messages
+ * *feel* like they're being typed rather than dumped.
+ */
+function useStreamedContent(fullText: string): string {
+  const [shown, setShown] = useState<string>('')
+  const startedRef = useRef<boolean>(false)
+
+  useEffect(() => {
+    if (startedRef.current) return
+    startedRef.current = true
+    const tickMs = autoTickMs(fullText.length)
+    const cancel = streamText(fullText, setShown, { tickMs, chunkSize: 2 })
+    return cancel
+  }, [fullText])
+
+  return shown
+}
+
 function AIBubble({
   message,
   persona,
@@ -158,6 +183,8 @@ function AIBubble({
 }): React.ReactElement {
   const [from, to] = persona.gradient
   const kind: AIMessageKind = message.kind ?? 'reply'
+  const streamed = useStreamedContent(message.content)
+  const isStreaming = streamed.length < message.content.length
   const style = AI_KIND_STYLES[kind]
   const Icon = style.icon
   // Replies are the common case — don't chrome them up with a label.
@@ -203,7 +230,14 @@ function AIBubble({
             className="text-[12.5px] leading-[1.65] whitespace-pre-wrap"
             style={{ color: 'var(--text-secondary)' }}
           >
-            {message.content}
+            {streamed}
+            {isStreaming && (
+              <span
+                className="inline-block w-[2px] h-[12px] ml-0.5 align-middle animate-pulse"
+                style={{ background: 'var(--accent-purple)' }}
+                aria-hidden="true"
+              />
+            )}
           </p>
         </div>
         <p
