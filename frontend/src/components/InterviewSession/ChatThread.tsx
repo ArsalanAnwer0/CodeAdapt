@@ -1,7 +1,46 @@
 import React, { memo, useEffect, useRef } from 'react'
-import { Zap } from 'lucide-react'
-import { ChatMessage } from '../../types'
+import { Zap, HelpCircle, Eye, ArrowRight, MessageCircle } from 'lucide-react'
+import { ChatMessage, AIMessageKind } from '../../types'
 import type { Persona } from './persona'
+
+/**
+ * Visual treatment per AI message kind. Keeping this as a pure lookup
+ * means the switch lives in one place and the bubble component stays
+ * declarative. Colors reference CSS variables so both themes track.
+ */
+interface AIKindStyle {
+  label: string
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
+  accent: string
+  tint: string
+}
+
+const AI_KIND_STYLES: Record<AIMessageKind, AIKindStyle> = {
+  reply: {
+    label: 'Reply',
+    icon: MessageCircle,
+    accent: 'var(--accent-purple)',
+    tint: 'rgba(130,80,223,0.05)',
+  },
+  question: {
+    label: 'Question',
+    icon: HelpCircle,
+    accent: 'var(--accent-blue)',
+    tint: 'rgba(9,105,218,0.05)',
+  },
+  'code-observation': {
+    label: 'Observation',
+    icon: Eye,
+    accent: 'var(--accent-amber)',
+    tint: 'rgba(191,135,0,0.06)',
+  },
+  'follow-up': {
+    label: 'Follow-up',
+    icon: ArrowRight,
+    accent: 'var(--accent-orange)',
+    tint: 'rgba(188,76,0,0.06)',
+  },
+}
 
 export interface ChatThreadProps {
   messages: ChatMessage[]
@@ -118,6 +157,11 @@ function AIBubble({
   persona: Persona
 }): React.ReactElement {
   const [from, to] = persona.gradient
+  const kind: AIMessageKind = message.kind ?? 'reply'
+  const style = AI_KIND_STYLES[kind]
+  const Icon = style.icon
+  // Replies are the common case — don't chrome them up with a label.
+  const showKindLabel = kind !== 'reply'
   return (
     <div className="flex items-start gap-2.5 animate-message">
       <div
@@ -136,11 +180,25 @@ function AIBubble({
         <div
           className="rounded-2xl rounded-tl-sm px-3.5 py-2.5"
           style={{
-            background: 'var(--bg-secondary)',
+            background: showKindLabel ? style.tint : 'var(--bg-secondary)',
             border: '1px solid var(--border-secondary)',
-            borderLeft: '2px solid var(--accent-purple)',
+            borderLeft: `2px solid ${style.accent}`,
           }}
         >
+          {showKindLabel && (
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Icon
+                className="w-3 h-3"
+                style={{ color: style.accent }}
+              />
+              <span
+                className="text-[9px] font-bold uppercase tracking-wider"
+                style={{ color: style.accent }}
+              >
+                {style.label}
+              </span>
+            </div>
+          )}
           <p
             className="text-[12.5px] leading-[1.65] whitespace-pre-wrap"
             style={{ color: 'var(--text-secondary)' }}

@@ -24,6 +24,7 @@ export type {
 export type {
   ChatMessage,
   ChatRole,
+  AIMessageKind,
   Injection,
   InjectionType,
 } from './chat'
