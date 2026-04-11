@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Zap, ChevronRight, Terminal, Brain, Timer, Sparkles, History } from 'lucide-react'
 import { Language, Difficulty, Topic, SessionDuration, SessionConfig } from '../types'
 import { usePreferences } from '../stores/preferences'
+import WelcomeCard from './WelcomeCard'
 
 interface SetupPanelProps {
   onStart: (config: SessionConfig) => void
@@ -40,7 +41,7 @@ const TOPICS: { id: Topic; label: string }[] = [
 const DURATIONS: SessionDuration[] = [15, 30, 45, 60]
 
 export default function SetupPanel({ onStart, onViewHistory }: SetupPanelProps) {
-  const { preferences } = usePreferences()
+  const { preferences, setPreference } = usePreferences()
   const [language, setLanguage] = useState<Language>(preferences.language)
   const [difficulty, setDifficulty] = useState<Difficulty>(preferences.difficulty)
   const [topic, setTopic] = useState<Topic>(preferences.topic)
@@ -136,10 +137,16 @@ export default function SetupPanel({ onStart, onViewHistory }: SetupPanelProps) 
 
         <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
           <div className="w-full max-w-md animate-fade-in">
-            <div className="mb-8">
+            <div className="mb-6">
               <h2 className="text-xl font-bold mb-1.5" style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>Configure Session</h2>
               <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>Set up your practice interview</p>
             </div>
+
+            {!preferences.hasSeenWelcome && (
+              <WelcomeCard
+                onDismiss={() => setPreference('hasSeenWelcome', true)}
+              />
+            )}
 
             {/* Language */}
             <div className="mb-6">
