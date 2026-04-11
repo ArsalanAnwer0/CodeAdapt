@@ -50,12 +50,29 @@ export default function TopBar({ elapsedSeconds, onInject, onEndSession }: TopBa
             {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
           </button>
         </Tooltip>
-        <button onClick={onInject}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:bg-[rgba(188,76,0,0.12)] active:scale-[0.97] group"
-          style={{ background: 'rgba(188,76,0,0.07)', color: 'var(--accent-orange)', border: '1px solid rgba(188,76,0,0.18)' }}>
-          <Sparkles className="w-3.5 h-3.5 transition-transform duration-300 group-hover:rotate-12" />
-          Inject Chaos
-        </button>
+        {/*
+          The "send a follow-up" affordance used to shout "Inject Chaos"
+          in a saturated orange pill. Realism goal is the opposite: the
+          candidate should forget it exists, then be surprised when the
+          interviewer pushes a follow-up. Keeping it as a subtle icon
+          tile so curious users can still trigger it manually (also
+          behind ⌘I).
+        */}
+        <Tooltip label="Trigger a follow-up · ⌘I">
+          <button
+            type="button"
+            onClick={onInject}
+            aria-label="Trigger follow-up"
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 active:scale-[0.94] hover:brightness-110 group"
+            style={{
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-quaternary)',
+              border: '1px solid var(--border-primary)',
+            }}
+          >
+            <Sparkles className="w-3.5 h-3.5 transition-transform duration-300 group-hover:rotate-12" />
+          </button>
+        </Tooltip>
         <button onClick={onEndSession}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:bg-[rgba(207,34,46,0.1)] active:scale-[0.97]"
           style={{ background: 'rgba(207,34,46,0.05)', color: 'var(--accent-severe)', border: '1px solid rgba(207,34,46,0.15)' }}>
