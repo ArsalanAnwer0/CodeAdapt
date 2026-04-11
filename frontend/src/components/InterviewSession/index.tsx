@@ -7,6 +7,7 @@ import MetricsBar from './MetricsBar'
 import InjectionBanner from './InjectionBanner'
 import WrapUpOverlay from './WrapUpOverlay'
 import FollowUpTip from './FollowUpTip'
+import SessionTour from './SessionTour'
 import { usePreferences } from '../../stores/preferences'
 import KeyboardShortcutsModal from '../KeyboardShortcutsModal'
 import ConfirmEndSessionModal from '../ConfirmEndSessionModal'
@@ -61,6 +62,12 @@ export default function InterviewSession({
   // Once the first injection lands and the user hasn't dismissed the
   // tip before, we flip this to true. Clicking X dismisses + persists.
   const [showFollowUpTip, setShowFollowUpTip] = useState(false)
+  // Tour opens once on mount if the user hasn't seen it yet. We read
+  // the flag into local state so dismissing doesn't cause a flicker
+  // from the prefs round-trip.
+  const [showTour, setShowTour] = useState<boolean>(
+    () => !preferences.hasSeenSessionTour
+  )
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showConfirmEnd, setShowConfirmEnd] = useState(false)
   const [problem] = useState<Problem>(() =>
@@ -422,6 +429,15 @@ export default function InterviewSession({
       </div>
 
       <MetricsBar metrics={metrics} durationSeconds={elapsedSeconds} />
+
+      <SessionTour
+        open={showTour}
+        persona={persona}
+        onClose={() => {
+          setShowTour(false)
+          setPreference('hasSeenSessionTour', true)
+        }}
+      />
 
       <WrapUpOverlay
         open={wrappingUp}
