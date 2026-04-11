@@ -10,6 +10,12 @@ interface CodeEditorProps {
   code: string
   onCodeChange: (code: string) => void
   onRun: () => void
+  /**
+   * When true, the editor shows a brief horizontal sweep overlay to
+   * signal "the interviewer is reading your code". Driven by the
+   * interviewer state machine from the session shell.
+   */
+  sweeping?: boolean
 }
 
 function getMonacoLanguage(lang: Language): string {
@@ -33,7 +39,7 @@ function generateTestCases(problem: Problem, codeLength: number): TestCase[] {
   }))
 }
 
-export default function CodeEditor({ language, problem, code, onCodeChange, onRun }: CodeEditorProps) {
+export default function CodeEditor({ language, problem, code, onCodeChange, onRun, sweeping = false }: CodeEditorProps) {
   const { theme } = useTheme()
   const [consoleOpen, setConsoleOpen] = useState(false)
   const [running, setRunning] = useState(false)
@@ -78,7 +84,8 @@ export default function CodeEditor({ language, problem, code, onCodeChange, onRu
       </div>
 
       {/* Editor */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 relative">
+        {sweeping && <div key={Date.now()} className="code-sweep" aria-hidden="true" />}
         <Editor height="100%" language={getMonacoLanguage(language)} value={code}
           onChange={(val) => onCodeChange(val || '')} theme={theme === 'dark' ? 'vs-dark' : 'light'}
           options={{

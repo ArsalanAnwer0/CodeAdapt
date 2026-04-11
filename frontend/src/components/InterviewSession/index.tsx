@@ -224,7 +224,10 @@ export default function InterviewSession({
       adaptabilityScore: Math.max(10, prev.adaptabilityScore - 5),
     }))
     interviewer.markInjectionAt(elapsedRef.current)
-    interviewer.dispatch({ type: 'startFollowUp', injectionId: inj.id })
+    // Brief "reading your code" beat before the follow-up card shows up.
+    // This is what drives the editor sweep animation via the state
+    // machine instead of a one-off flag.
+    interviewer.dispatch({ type: 'startReviewing' })
 
     setTimeline((prev) => [
       ...prev,
@@ -241,13 +244,16 @@ export default function InterviewSession({
       timestamp: new Date(),
     })
 
+    // Reading the code → thinking → follow-up. The two timeouts are
+    // what the sweep + typing dots hang off of, so leaving them as
+    // siblings of the state transitions keeps everything legible.
     setTimeout(() => {
       interviewer.dispatch({ type: 'startThinking' })
       setTimeout(() => {
         interviewer.dispatch({ type: 'settle' })
         addAIMessage(getInjectionFollowUp(inj), 'ai', 'follow-up')
       }, 1500)
-    }, 500)
+    }, 900)
   }, [addMessage, addAIMessage, interviewer])
 
   const handleRun = useCallback(() => {
@@ -357,6 +363,7 @@ export default function InterviewSession({
               code={code}
               onCodeChange={setCode}
               onRun={handleRun}
+              sweeping={interviewer.state.kind === 'reviewingCode'}
             />
           </div>
         </div>
