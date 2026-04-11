@@ -25,7 +25,7 @@ const sections: Section[] = [
   {
     title: 'Session',
     shortcuts: [
-      { label: 'Inject chaos', keys: [MOD, 'I'] },
+      { label: 'Trigger follow-up', keys: [MOD, 'I'] },
       { label: 'End session', keys: [MOD, 'Shift', 'E'] },
       { label: 'Toggle theme', keys: [MOD, 'Shift', 'L'] },
       { label: 'Open shortcuts', keys: [MOD, '/'] },
