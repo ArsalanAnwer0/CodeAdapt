@@ -41,7 +41,7 @@ function MetricsBar({ metrics }: MetricsBarProps) {
 
       <div className="flex items-center gap-1.5 px-3 text-[11px]">
         <Zap className="w-3.5 h-3.5" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-quaternary)' }} />
-        <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Injections</span>
+        <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Follow-ups</span>
         <span className="font-bold" style={{ color: metrics.injectionCount > 0 ? 'var(--accent-orange)' : 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{metrics.injectionCount}</span>
       </div>
 
