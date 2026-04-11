@@ -238,7 +238,12 @@ export default function InterviewSession({
       ...prev,
       {
         type: 'injection',
-        label: injection.type === 'bug' ? 'Bug Injected' : 'Req Changed',
+        // Friendlier labels — the old "Bug Injected" sounded like a
+        // system error, not a follow-up question from an interviewer.
+        label:
+          injection.type === 'bug'
+            ? 'Bug appeared'
+            : 'Requirements shifted',
         time: elapsedRef.current,
       },
     ])
@@ -266,7 +271,7 @@ export default function InterviewSession({
   const handleRun = useCallback(() => {
     setTimeline((prev) => [
       ...prev,
-      { type: 'submission', label: 'Code Run', time: elapsedRef.current },
+      { type: 'submission', label: 'Ran code', time: elapsedRef.current },
     ])
     if (code.trim().length > 200) {
       setMetrics((prev) => ({
