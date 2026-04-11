@@ -6,6 +6,8 @@ import ChatPanel from './ChatPanel'
 import MetricsBar from './MetricsBar'
 import InjectionBanner from './InjectionBanner'
 import WrapUpOverlay from './WrapUpOverlay'
+import FollowUpTip from './FollowUpTip'
+import { usePreferences } from '../../stores/preferences'
 import KeyboardShortcutsModal from '../KeyboardShortcutsModal'
 import ConfirmEndSessionModal from '../ConfirmEndSessionModal'
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut'
@@ -55,6 +57,10 @@ export default function InterviewSession({
 }: InterviewSessionProps) {
   const { toggle: toggleTheme } = useTheme()
   const { play: playSound } = useSound()
+  const { preferences, setPreference } = usePreferences()
+  // Once the first injection lands and the user hasn't dismissed the
+  // tip before, we flip this to true. Clicking X dismisses + persists.
+  const [showFollowUpTip, setShowFollowUpTip] = useState(false)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showConfirmEnd, setShowConfirmEnd] = useState(false)
   const [problem] = useState<Problem>(() =>
@@ -255,6 +261,7 @@ export default function InterviewSession({
       timestamp: new Date(),
     })
     playSound('followUp')
+    if (!preferences.hasSeenFollowUpTip) setShowFollowUpTip(true)
 
     // Reading the code → thinking → follow-up. The two timeouts are
     // what the sweep + typing dots hang off of, so leaving them as
@@ -267,7 +274,7 @@ export default function InterviewSession({
         playSound('messageIn')
       }, 1500)
     }, 900)
-  }, [addMessage, addAIMessage, interviewer, playSound])
+  }, [addMessage, addAIMessage, interviewer, playSound, preferences.hasSeenFollowUpTip])
 
   const handleRun = useCallback(() => {
     setTimeline((prev) => [
@@ -376,6 +383,13 @@ export default function InterviewSession({
           }}
         >
           <InjectionBanner injection={pending} />
+          <FollowUpTip
+            open={showFollowUpTip && Boolean(pending)}
+            onDismiss={() => {
+              setShowFollowUpTip(false)
+              setPreference('hasSeenFollowUpTip', true)
+            }}
+          />
           <div className="flex-1 min-h-0 overflow-hidden">
             <CodeEditor
               language={config.language}
