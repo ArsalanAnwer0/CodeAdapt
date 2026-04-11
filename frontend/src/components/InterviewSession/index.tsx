@@ -8,6 +8,7 @@ import InjectionBanner from './InjectionBanner'
 import KeyboardShortcutsModal from '../KeyboardShortcutsModal'
 import ConfirmEndSessionModal from '../ConfirmEndSessionModal'
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut'
+import { useSound } from '../../hooks/useSound'
 import { formatDurationHuman } from '../../lib/format'
 import { useTheme } from '../../theme/ThemeProvider'
 import { pickPersona } from './persona'
@@ -52,6 +53,7 @@ export default function InterviewSession({
   onEnd,
 }: InterviewSessionProps) {
   const { toggle: toggleTheme } = useTheme()
+  const { play: playSound } = useSound()
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showConfirmEnd, setShowConfirmEnd] = useState(false)
   const [problem] = useState<Problem>(() =>
@@ -152,6 +154,7 @@ export default function InterviewSession({
     const timer = setTimeout(() => {
       addAIMessage(getOpeningMessage(config, problem), 'ai', 'question')
       interviewer.dispatch({ type: 'settle' })
+      playSound('messageIn')
     }, 800)
     return () => clearTimeout(timer)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -164,6 +167,7 @@ export default function InterviewSession({
         content,
         timestamp: new Date(),
       })
+      playSound('messageOut')
       userMessageCount.current += 1
       const now = elapsedRef.current
 
@@ -203,9 +207,10 @@ export default function InterviewSession({
           'ai',
           'reply'
         )
+        playSound('messageIn')
       }, 1000 + Math.random() * 1500)
     },
-    [addMessage, addAIMessage, problem, code, interviewer]
+    [addMessage, addAIMessage, problem, code, interviewer, playSound]
   )
 
   const handleInject = useCallback(() => {
@@ -243,6 +248,7 @@ export default function InterviewSession({
       content: injection.content,
       timestamp: new Date(),
     })
+    playSound('followUp')
 
     // Reading the code → thinking → follow-up. The two timeouts are
     // what the sweep + typing dots hang off of, so leaving them as
@@ -252,9 +258,10 @@ export default function InterviewSession({
       setTimeout(() => {
         interviewer.dispatch({ type: 'settle' })
         addAIMessage(getInjectionFollowUp(inj), 'ai', 'follow-up')
+        playSound('messageIn')
       }, 1500)
     }, 900)
-  }, [addMessage, addAIMessage, interviewer])
+  }, [addMessage, addAIMessage, interviewer, playSound])
 
   const handleRun = useCallback(() => {
     setTimeline((prev) => [
@@ -267,16 +274,18 @@ export default function InterviewSession({
         problemsSolved: Math.min(prev.problemsSolved + 1, prev.totalProblems),
         adaptabilityScore: Math.min(100, prev.adaptabilityScore + 3),
       }))
+      playSound('dingSoft')
     }
     // A run after an injection counts as addressing the follow-up.
     if (pending) {
       setInjections((prev) => resolveLatest(prev, new Date()))
       interviewer.clearInjection()
     }
-  }, [code, pending, interviewer])
+  }, [code, pending, interviewer, playSound])
 
   const handleEndSession = useCallback(() => {
     interviewer.dispatch({ type: 'startWrapUp' })
+    playSound('wrapUp')
     const finalMetrics = {
       ...metrics,
       injectionCount: resolvedCount(injections),
@@ -311,6 +320,7 @@ export default function InterviewSession({
     addMessage,
     addAIMessage,
     interviewer,
+    playSound,
   ])
 
   // Global keyboard shortcuts for power users.
