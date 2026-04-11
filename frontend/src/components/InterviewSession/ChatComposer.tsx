@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react'
 import { Send } from 'lucide-react'
 import type { Persona } from './persona'
 
@@ -13,6 +19,15 @@ export interface ChatComposerProps {
 }
 
 /**
+ * Imperative handle exposed to parents so a keyboard shortcut like
+ * ⌘K can jump focus into the composer without prop-drilling a ref
+ * through ChatPanel.
+ */
+export interface ChatComposerHandle {
+  focus: () => void
+}
+
+/**
  * Message input at the bottom of the chat column.
  *
  * Pulled out of the old monolithic ChatPanel so the composer can own
@@ -20,16 +35,24 @@ export interface ChatComposerProps {
  * dragging the thread view along for the ride. Parent owns the
  * interviewer state machine; the composer just announces focus.
  */
-export default function ChatComposer({
-  persona,
-  disabled = false,
-  onSend,
-  onFocus,
-  onBlur,
-}: ChatComposerProps): React.ReactElement {
+const ChatComposer = forwardRef<ChatComposerHandle, ChatComposerProps>(
+  function ChatComposer(
+    { persona, disabled = false, onSend, onFocus, onBlur },
+    ref
+  ): React.ReactElement {
   const [value, setValue] = useState('')
   const [focused, setFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus: (): void => {
+        textareaRef.current?.focus()
+      },
+    }),
+    []
+  )
 
   const resize = (el: HTMLTextAreaElement): void => {
     el.style.height = 'auto'
@@ -122,4 +145,7 @@ export default function ChatComposer({
       </p>
     </div>
   )
-}
+  }
+)
+
+export default ChatComposer

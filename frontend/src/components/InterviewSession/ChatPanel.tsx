@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react'
+import React, { forwardRef, useMemo } from 'react'
 import { ChatMessage } from '../../types'
 import InterviewerHeader from './InterviewerHeader'
 import ChatThread from './ChatThread'
-import ChatComposer from './ChatComposer'
+import ChatComposer, { type ChatComposerHandle } from './ChatComposer'
 import { defaultPersona, type Persona } from './persona'
 import {
   initialInterviewerState,
@@ -45,15 +45,19 @@ export interface ChatPanelProps {
  * each subcomponent memoizable and lets the header read directly from
  * the interviewer state machine instead of booleans.
  */
-export default function ChatPanel({
-  messages,
-  isTyping,
-  onSendMessage,
-  persona = defaultPersona,
-  interviewerState,
-  onComposerFocus,
-  onComposerBlur,
-}: ChatPanelProps): React.ReactElement {
+const ChatPanel = forwardRef<ChatComposerHandle, ChatPanelProps>(
+  function ChatPanel(
+    {
+      messages,
+      isTyping,
+      onSendMessage,
+      persona = defaultPersona,
+      interviewerState,
+      onComposerFocus,
+      onComposerBlur,
+    },
+    composerRef
+  ): React.ReactElement {
   // Synthesize a state if the parent hasn't plumbed the reducer through
   // yet. This keeps backwards compatibility during the rollout: the
   // header still animates on isTyping, and no caller breaks.
@@ -75,6 +79,7 @@ export default function ChatPanel({
         isTyping={isTyping}
       />
       <ChatComposer
+        ref={composerRef}
         persona={persona}
         onSend={onSendMessage}
         onFocus={onComposerFocus}
@@ -82,4 +87,7 @@ export default function ChatPanel({
       />
     </div>
   )
-}
+  }
+)
+
+export default ChatPanel

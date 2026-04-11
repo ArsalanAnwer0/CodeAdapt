@@ -3,6 +3,7 @@ import TopBar from './TopBar'
 import ProblemPanel from './ProblemPanel'
 import CodeEditor from './CodeEditor'
 import ChatPanel from './ChatPanel'
+import type { ChatComposerHandle } from './ChatComposer'
 import MetricsBar from './MetricsBar'
 import InjectionBanner from './InjectionBanner'
 import WrapUpOverlay from './WrapUpOverlay'
@@ -102,6 +103,7 @@ export default function InterviewSession({
     { type: 'problem', label: problem.title, time: 0 },
   ])
 
+  const composerRef = useRef<ChatComposerHandle>(null)
   const elapsedRef = useRef(0)
   const lastUserMessageTime = useRef<number | null>(null)
   const userMessageCount = useRef(0)
@@ -348,6 +350,9 @@ export default function InterviewSession({
   ])
 
   // Global keyboard shortcuts for power users.
+  // ⌘K jumps focus to the composer so you can reply without reaching
+  // for the mouse — common "jump to chat" shortcut in editor tools.
+  useKeyboardShortcut('mod+k', () => composerRef.current?.focus())
   useKeyboardShortcut('mod+i', () => handleInject())
   useKeyboardShortcut('mod+shift+e', () => setShowConfirmEnd(true))
   useKeyboardShortcut('mod+shift+l', () => toggleTheme())
@@ -415,6 +420,7 @@ export default function InterviewSession({
           style={{ width: '32%', minWidth: '300px' }}
         >
           <ChatPanel
+            ref={composerRef}
             messages={messages}
             isTyping={interviewer.isTyping}
             onSendMessage={handleSendMessage}
