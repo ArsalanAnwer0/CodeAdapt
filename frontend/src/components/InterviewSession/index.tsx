@@ -33,16 +33,10 @@ import {
   Problem,
 } from '../../types'
 import { getRandomProblem } from '../../data/problems'
-import { getRandomInjection } from '../../data/injections'
-import {
-  getOpeningMessage,
-  getResponseToUserMessage,
-  getInjectionFollowUp,
-  getClosingFeedback,
-  generateAISummary,
-  calculateCodeQuality,
-  calculateCommunicationScore,
-} from '../../utils/mockAI'
+import { api } from '../../services/api'
+import { createLogger } from '../../lib/logger'
+
+const log = createLogger('session')
 
 function generateId(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36)
@@ -105,6 +99,12 @@ export default function InterviewSession({
 
   const composerRef = useRef<ChatComposerHandle>(null)
   const elapsedRef = useRef(0)
+
+  // Mounted guard — every async call in this component checks this
+  // before writing to state so we don't update after unmount (e.g. the
+  // user ends the session while the interviewer was "thinking").
+  const mountedRef = useRef(true)
+  useEffect(() => () => { mountedRef.current = false }, [])
   /**
    * Tracks every pending `setTimeout` the session owns so we can
    * cancel them on unmount. Without this, a timer scheduled for
@@ -189,12 +189,12 @@ export default function InterviewSession({
     if (openingMessageSent.current) return
     openingMessageSent.current = true
     interviewer.dispatch({ type: 'startGreeting' })
-    const timer = setTimeout(() => {
-      addAIMessage(getOpeningMessage(config, problem), 'ai', 'question')
+    api.getOpeningMessage(config, problem).then((text) => {
+      if (!mountedRef.current) return
+      addAIMessage(text, 'ai', 'question')
       interviewer.dispatch({ type: 'settle' })
       playSound('messageIn')
-    }, 800)
-    return () => clearTimeout(timer)
+    }).catch((err) => log.error('opening message failed', err))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSendMessage = useCallback(
@@ -238,73 +238,79 @@ export default function InterviewSession({
       lastUserMessageTime.current = now
 
       interviewer.dispatch({ type: 'startThinking' })
-      schedule(() => {
-        interviewer.dispatch({ type: 'settle' })
-        addAIMessage(
-          getResponseToUserMessage(content, problem, code),
-          'ai',
-          'reply'
-        )
-        playSound('messageIn')
-      }, 1000 + Math.random() * 1500)
+      api
+        .sendMessage({
+          sessionId: problem.id,
+          content,
+          problem,
+          code,
+        })
+        .then((text) => {
+          if (!mountedRef.current) return
+          interviewer.dispatch({ type: 'settle' })
+          addAIMessage(text, 'ai', 'reply')
+          playSound('messageIn')
+        })
+        .catch((err) => log.error('reply failed', err))
     },
-    [addMessage, addAIMessage, problem, code, interviewer, playSound, schedule]
+    [addMessage, addAIMessage, problem, code, interviewer, playSound]
   )
 
   const handleInject = useCallback(() => {
-    const injection = getRandomInjection()
-    const inj: Injection = {
-      id: generateId(),
-      content: injection.content,
-      timestamp: new Date(),
-      type: injection.type,
-    }
+    // Delegate injection creation to the API — the mock builds a random
+    // one locally, the real backend will draw from the problem context.
+    api
+      .createInjection({ sessionId: problem.id })
+      .then((inj) => {
+        if (!mountedRef.current) return
 
-    setInjections((prev) => [...prev, inj])
-    setMetrics((prev) => ({
-      ...prev,
-      injectionCount: prev.injectionCount + 1,
-      adaptabilityScore: Math.max(10, prev.adaptabilityScore - 5),
-    }))
-    interviewer.markInjectionAt(elapsedRef.current)
-    // Brief "reading your code" beat before the follow-up card shows up.
-    // This is what drives the editor sweep animation via the state
-    // machine instead of a one-off flag.
-    interviewer.dispatch({ type: 'startReviewing' })
+        setInjections((prev) => [...prev, inj])
+        setMetrics((prev) => ({
+          ...prev,
+          injectionCount: prev.injectionCount + 1,
+          adaptabilityScore: Math.max(10, prev.adaptabilityScore - 5),
+        }))
+        interviewer.markInjectionAt(elapsedRef.current)
+        interviewer.dispatch({ type: 'startReviewing' })
 
-    setTimeline((prev) => [
-      ...prev,
-      {
-        type: 'injection',
-        // Friendlier labels — the old "Bug Injected" sounded like a
-        // system error, not a follow-up question from an interviewer.
-        label:
-          injection.type === 'bug'
-            ? 'Bug appeared'
-            : 'Requirements shifted',
-        time: elapsedRef.current,
-      },
-    ])
-    addMessage({
-      id: generateId(),
-      role: 'injection',
-      content: injection.content,
-      timestamp: new Date(),
-    })
-    playSound('followUp')
-    if (!preferences.hasSeenFollowUpTip) setShowFollowUpTip(true)
+        setTimeline((prev) => [
+          ...prev,
+          {
+            type: 'injection',
+            label:
+              inj.type === 'bug'
+                ? 'Bug appeared'
+                : 'Requirements shifted',
+            time: elapsedRef.current,
+          },
+        ])
+        addMessage({
+          id: generateId(),
+          role: 'injection',
+          content: inj.content,
+          timestamp: new Date(),
+        })
+        playSound('followUp')
+        if (!preferences.hasSeenFollowUpTip) setShowFollowUpTip(true)
 
-    // Reading the code → thinking → follow-up. The two timeouts are
-    // what the sweep + typing dots hang off of, so leaving them as
-    // siblings of the state transitions keeps everything legible.
-    schedule(() => {
-      interviewer.dispatch({ type: 'startThinking' })
-      schedule(() => {
-        interviewer.dispatch({ type: 'settle' })
-        addAIMessage(getInjectionFollowUp(inj), 'ai', 'follow-up')
-        playSound('messageIn')
-      }, 1500)
-    }, 900)
+        // Reading the code → thinking → follow-up message.
+        schedule(() => {
+          interviewer.dispatch({ type: 'startThinking' })
+          api
+            .getInjectionFollowUp({
+              sessionId: problem.id,
+              injection: inj,
+            })
+            .then((text) => {
+              if (!mountedRef.current) return
+              interviewer.dispatch({ type: 'settle' })
+              addAIMessage(text, 'ai', 'follow-up')
+              playSound('messageIn')
+            })
+            .catch((err) => log.error('follow-up failed', err))
+        }, 900)
+      })
+      .catch((err) => log.error('injection failed', err))
   }, [
     addMessage,
     addAIMessage,
@@ -312,6 +318,7 @@ export default function InterviewSession({
     playSound,
     preferences.hasSeenFollowUpTip,
     schedule,
+    problem.id,
   ])
 
   const handleRun = useCallback(() => {
@@ -339,31 +346,59 @@ export default function InterviewSession({
     interviewer.dispatch({ type: 'startWrapUp' })
     playSound('wrapUp')
     setWrappingUp(true)
+
     const finalMetrics = {
       ...metrics,
       injectionCount: resolvedCount(injections),
     }
-    const result: SessionResult = {
-      config,
-      metrics: finalMetrics,
-      duration: elapsedRef.current,
-      messages,
-      injections,
-      codeQualityScore: calculateCodeQuality(code),
-      communicationScore: calculateCommunicationScore(messages),
-      timeline,
-      aiSummary: generateAISummary(finalMetrics),
-    }
+
     addMessage({
       id: generateId(),
       role: 'system',
       content: 'Session ended',
       timestamp: new Date(),
     })
-    addAIMessage(getClosingFeedback(finalMetrics), 'ai', 'reply')
-    // Give the wrap-up overlay enough time to read as a moment, not
-    // a flash — the CSS fill completes at 1.1s.
-    schedule(() => onEnd(result), 1300)
+
+    // Fire closing feedback + result build concurrently via the API.
+    // The mock adapters mirror the old logic; the real backend will
+    // aggregate scoring server-side.
+    Promise.all([
+      api.getClosingFeedback({ metrics: finalMetrics }),
+      api.completeSession({
+        config,
+        metrics: finalMetrics,
+        code,
+        messages,
+        injections,
+        duration: elapsedRef.current,
+      }),
+    ])
+      .then(([closingText, result]) => {
+        if (!mountedRef.current) return
+        // Attach client-side timeline — the server may not know about
+        // it and the type already has a fallback for an empty array.
+        const enriched: SessionResult = {
+          ...result,
+          timeline: result.timeline.length ? result.timeline : timeline,
+        }
+        addAIMessage(closingText, 'ai', 'reply')
+        schedule(() => onEnd(enriched), 1300)
+      })
+      .catch((err) => {
+        log.error('end session failed', err)
+        // Fall through so the user isn't stuck on the overlay.
+        schedule(() => onEnd({
+          config,
+          metrics: finalMetrics,
+          duration: elapsedRef.current,
+          messages,
+          injections,
+          codeQualityScore: 0,
+          communicationScore: 0,
+          timeline,
+          aiSummary: 'Results could not be generated.',
+        }), 1300)
+      })
   }, [
     metrics,
     code,
