@@ -103,8 +103,13 @@ export default function InterviewSession({
   // Mounted guard — every async call in this component checks this
   // before writing to state so we don't update after unmount (e.g. the
   // user ends the session while the interviewer was "thinking").
+  // The effect body sets `true` on every mount so React 18 Strict Mode's
+  // unmount/remount cycle doesn't leave the ref stuck at `false`.
   const mountedRef = useRef(true)
-  useEffect(() => () => { mountedRef.current = false }, [])
+  useEffect(() => {
+    mountedRef.current = true
+    return () => { mountedRef.current = false }
+  }, [])
   /**
    * Tracks every pending `setTimeout` the session owns so we can
    * cancel them on unmount. Without this, a timer scheduled for
