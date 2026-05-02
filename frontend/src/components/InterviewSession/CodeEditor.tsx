@@ -71,8 +71,8 @@ export default function CodeEditor({ language, problem, code, onCodeChange, onRu
 
         <div className="flex-1" />
 
-        <button onClick={handleReset} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 hover:bg-[var(--bg-tertiary)] active:scale-[0.97]"
-          style={{ color: 'var(--text-tertiary)', border: '1px solid var(--border-secondary)' }}>
+        <button onClick={handleReset} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-150 hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-secondary)] active:scale-[0.97]"
+          style={{ color: 'var(--text-quaternary)', border: '1px solid var(--border-primary)' }}>
           <RotateCcw className="w-3 h-3" /> Reset
         </button>
         {/*

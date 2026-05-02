@@ -35,7 +35,7 @@ const toneStyles: Record<Tone, React.CSSProperties> = {
   },
   success: {
     background: 'rgba(26,127,55,0.08)',
-    color: 'var(--accent-success)',
+    color: 'var(--accent-green)',
     border: '1px solid rgba(26,127,55,0.18)',
   },
   warning: {

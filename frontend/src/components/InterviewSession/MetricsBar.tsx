@@ -33,7 +33,7 @@ function MetricsBar({ metrics }: MetricsBarProps) {
           <span className="font-medium" style={{ color: 'var(--text-quaternary)' }}>Adapt</span>
           <span className="font-bold" style={{ color: scoreColor, fontVariantNumeric: 'tabular-nums' }}>{adapt}</span>
           <div className="w-14 h-1.5 rounded-full overflow-hidden ml-0.5" style={{ background: 'var(--bg-tertiary)' }}>
-            <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${metrics.adaptabilityScore}%`, background: scoreColor }} />
+            <div className="h-full rounded-full transition-all duration-300 ease-out" style={{ width: `${metrics.adaptabilityScore}%`, background: scoreColor }} />
           </div>
         </div>
       </Tooltip>
@@ -70,9 +70,9 @@ function MetricsBar({ metrics }: MetricsBarProps) {
 
       <div className="flex-1" />
 
-      <div className="flex items-center gap-2 px-3 py-1 rounded-lg text-[11px]" style={{
-        background: isLowTime ? 'rgba(188,76,0,0.06)' : 'var(--bg-secondary)',
-        border: isLowTime ? '1px solid rgba(188,76,0,0.12)' : '1px solid var(--border-secondary)',
+      <div className={`flex items-center gap-2 px-3 py-1 rounded-lg text-[11px] transition-all duration-300${isLowTime ? ' animate-pulse' : ''}`} style={{
+        background: isLowTime ? 'rgba(188,76,0,0.1)' : 'var(--bg-secondary)',
+        border: isLowTime ? '1px solid rgba(188,76,0,0.25)' : '1px solid var(--border-secondary)',
       }}>
         <Clock className="w-3.5 h-3.5" style={{ color: isLowTime ? 'var(--accent-orange)' : 'var(--text-quaternary)' }} />
         <span className="font-mono font-bold tracking-wider" style={{

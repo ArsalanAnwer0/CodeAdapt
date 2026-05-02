@@ -77,7 +77,7 @@ export default function Modal({
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
-      style={{ background: 'rgba(1,4,9,0.55)', backdropFilter: 'blur(2px)' }}
+      style={{ background: 'rgba(1,4,9,0.6)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
       onMouseDown={(e) => {
         if (dismissOnBackdrop && e.target === e.currentTarget) onClose()
       }}

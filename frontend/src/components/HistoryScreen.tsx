@@ -7,6 +7,7 @@ import {
   Sparkles,
   Trash2,
   History as HistoryIcon,
+  ChevronRight,
 } from 'lucide-react'
 import { useHistory } from '../stores/history'
 import { formatDurationHuman, formatRelative } from '../lib/format'
@@ -27,6 +28,18 @@ function difficultyTone(d: StoredResult['config']['difficulty']) {
   if (d === 'easy') return 'success' as const
   if (d === 'medium') return 'warning' as const
   return 'danger' as const
+}
+
+function difficultyAccentColor(d: StoredResult['config']['difficulty']): string {
+  if (d === 'easy') return 'var(--accent-green)'
+  if (d === 'medium') return 'var(--accent-amber)'
+  return 'var(--accent-severe)'
+}
+
+function scoreColor(s: number): string {
+  if (s >= 70) return 'var(--accent-blue)'
+  if (s >= 40) return 'var(--accent-amber)'
+  return 'var(--accent-severe)'
 }
 
 /**
@@ -109,7 +122,7 @@ export default function HistoryScreen({
         )}
 
         {history.length === 0 ? (
-          <EmptyState />
+          <EmptyState onBack={onBack} />
         ) : (
           <ul className="space-y-2">
             {history.map((r) => (
@@ -118,6 +131,8 @@ export default function HistoryScreen({
                   interactive={Boolean(onOpen)}
                   onClick={() => onOpen?.(r)}
                   padding="md"
+                  className="overflow-hidden"
+                  style={{ borderLeft: `3px solid ${difficultyAccentColor(r.config.difficulty)}` }}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -161,11 +176,8 @@ export default function HistoryScreen({
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <div
-                        className="text-right min-w-[56px]"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
-                        <div className="text-lg font-bold leading-none">
+                      <div className="text-right min-w-[56px]">
+                        <div className="text-xl font-bold leading-none" style={{ color: scoreColor(r.metrics.adaptabilityScore), fontVariantNumeric: 'tabular-nums' }}>
                           {r.metrics.adaptabilityScore}
                         </div>
                         <div
@@ -229,7 +241,7 @@ function StatCard({
   )
 }
 
-function EmptyState(): React.ReactElement {
+function EmptyState({ onBack }: { onBack: () => void }): React.ReactElement {
   return (
     <Card padding="lg" className="text-center">
       <div
@@ -251,11 +263,19 @@ function EmptyState(): React.ReactElement {
         No sessions yet
       </h3>
       <p
-        className="text-[12px] mt-1"
+        className="text-[12px] mt-1 mb-4"
         style={{ color: 'var(--text-tertiary)' }}
       >
         Completed interviews will show up here.
       </p>
+      <button
+        onClick={onBack}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-semibold text-white transition-all duration-150 active:scale-[0.97] hover:brightness-110"
+        style={{ background: 'linear-gradient(135deg, var(--accent-blue), #0550ae)', boxShadow: '0 1px 4px rgba(9,105,218,0.25)' }}
+      >
+        Start your first interview
+        <ChevronRight className="w-3.5 h-3.5" />
+      </button>
     </Card>
   )
 }

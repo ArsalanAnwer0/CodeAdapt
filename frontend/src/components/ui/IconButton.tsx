@@ -35,10 +35,17 @@ const variantStyles: Record<Variant, React.CSSProperties> = {
     boxShadow: '0 1px 3px rgba(9,105,218,0.25)',
   },
   danger: {
-    background: 'rgba(207,34,46,0.05)',
+    background: 'rgba(207,34,46,0.08)',
     color: 'var(--accent-severe)',
-    border: '1px solid rgba(207,34,46,0.15)',
+    border: '1px solid rgba(207,34,46,0.2)',
   },
+}
+
+const variantHoverClass: Record<Variant, string> = {
+  ghost: 'hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]',
+  subtle: 'hover:bg-[var(--bg-tertiary)] hover:border-[var(--border-primary)]',
+  solid: 'hover:brightness-110',
+  danger: 'hover:bg-[rgba(207,34,46,0.14)]',
 }
 
 /**
@@ -62,9 +69,9 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         type={type}
         className={cn(
-          'inline-flex items-center justify-center transition-all duration-200',
+          'inline-flex items-center justify-center transition-all duration-150',
           'active:scale-[0.94] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
-          'hover:brightness-105',
+          variantHoverClass[variant],
           sizeStyles[size],
           className
         )}

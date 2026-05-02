@@ -25,12 +25,12 @@ function ScoreRing({ score }: { score: number }) {
         <circle cx="80" cy="80" r={r} fill="none" stroke="var(--bg-tertiary)" strokeWidth="7" />
         <circle cx="80" cy="80" r={r} fill="none" stroke={color} strokeWidth="7" strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={show ? c - (score/100)*c : c}
-          style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(0.4,0,0.2,1)', filter: `drop-shadow(0 0 6px ${color}40)` }} />
+          style={{ transition: 'stroke-dashoffset 1.0s cubic-bezier(0.4,0,0.2,1)', filter: `drop-shadow(0 0 8px ${color}50)` }} />
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className="text-[42px] font-extrabold leading-none" style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.03em' }}>{score}</span>
         <span className="text-[11px] font-medium mt-0.5" style={{ color: 'var(--text-quaternary)' }}>out of 100</span>
-        <span className="text-lg font-extrabold mt-1 px-2 py-0.5 rounded-md" style={{ color, background: `${color}10` }}>{getGrade(score)}</span>
+        <span className="text-lg font-extrabold mt-1 px-2.5 py-0.5 rounded-md" style={{ color, background: `${color}18`, border: `1px solid ${color}30` }}>{getGrade(score)}</span>
       </div>
     </div>
   )
@@ -100,7 +100,7 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mb-8 animate-fade-in" style={{ animationDelay: '0.25s' }}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8 animate-fade-in" style={{ animationDelay: '0.25s' }}>
           <StatCard icon={<CheckCircle2 className="w-4 h-4" />} label="Problems" value={`${result.metrics.problemsSolved}/${result.metrics.totalProblems}`} />
           <StatCard icon={<Clock className="w-4 h-4" />} label="Avg Response" value={`${result.metrics.avgResponseTime.toFixed(1)}m`} />
           <StatCard icon={<Zap className="w-4 h-4" />} label="Injections" value={result.metrics.injectionCount} />

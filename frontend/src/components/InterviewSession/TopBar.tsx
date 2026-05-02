@@ -25,8 +25,9 @@ export default function TopBar({ elapsedSeconds, onInject, onEndSession }: TopBa
           <Zap className="w-3.5 h-3.5 text-white" />
         </div>
         <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>CodeAdapt</span>
-        <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide"
-          style={{ background: 'rgba(9,105,218,0.06)', color: 'var(--accent-blue)', border: '1px solid rgba(9,105,218,0.1)' }}>
+        <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide"
+          style={{ background: 'rgba(26,127,55,0.08)', color: 'var(--accent-green)', border: '1px solid rgba(26,127,55,0.18)' }}>
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--accent-green)' }} />
           Live
         </span>
       </div>
@@ -74,8 +75,8 @@ export default function TopBar({ elapsedSeconds, onInject, onEndSession }: TopBa
           </button>
         </Tooltip>
         <button onClick={onEndSession}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:bg-[rgba(207,34,46,0.1)] active:scale-[0.97]"
-          style={{ background: 'rgba(207,34,46,0.05)', color: 'var(--accent-severe)', border: '1px solid rgba(207,34,46,0.15)' }}>
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 hover:bg-[rgba(207,34,46,0.18)] hover:border-[rgba(207,34,46,0.5)] active:scale-[0.97]"
+          style={{ background: 'rgba(207,34,46,0.1)', color: 'var(--accent-severe)', border: '1.5px solid rgba(207,34,46,0.3)' }}>
           <Square className="w-3 h-3 fill-current" />
           End Session
         </button>

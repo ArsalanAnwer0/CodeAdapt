@@ -156,14 +156,15 @@ export default function SetupPanel({ onStart, onViewHistory }: SetupPanelProps) 
                   const active = language === lang.id
                   return (
                     <button key={lang.id} onClick={() => setLanguage(lang.id)}
-                      className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg transition-all duration-200 hover:shadow-soft"
+                      className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg transition-all duration-150 hover:scale-[1.03] active:scale-[0.97]"
                       style={{
                         background: active ? 'rgba(9,105,218,0.07)' : 'var(--bg-secondary)',
                         border: active ? '1.5px solid var(--accent-blue)' : '1px solid var(--border-secondary)',
-                        boxShadow: active ? '0 0 0 3px rgba(9,105,218,0.08)' : 'none',
+                        boxShadow: active ? '0 0 0 3px rgba(9,105,218,0.1), 0 1px 3px rgba(9,105,218,0.12)' : 'none',
+                        transform: active ? 'scale(1.02)' : undefined,
                       }}>
-                      <span className="text-xs font-mono font-bold transition-colors duration-200" style={{ color: active ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.icon}</span>
-                      <span className="text-[10px] font-medium transition-colors duration-200" style={{ color: active ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.label}</span>
+                      <span className="text-xs font-mono font-bold transition-colors duration-150" style={{ color: active ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.icon}</span>
+                      <span className="text-[10px] font-medium transition-colors duration-150" style={{ color: active ? 'var(--accent-blue)' : 'var(--text-quaternary)' }}>{lang.label}</span>
                     </button>
                   )
                 })}
@@ -178,14 +179,15 @@ export default function SetupPanel({ onStart, onViewHistory }: SetupPanelProps) 
                   const active = difficulty === diff.id
                   return (
                     <button key={diff.id} onClick={() => setDifficulty(diff.id)}
-                      className="flex flex-col items-center gap-1 py-3.5 rounded-lg transition-all duration-200"
+                      className="flex flex-col items-center gap-1 py-3.5 rounded-lg transition-all duration-150 hover:scale-[1.03] active:scale-[0.97]"
                       style={{
-                        background: active ? `${diffColors[diff.id]}10` : 'var(--bg-secondary)',
+                        background: active ? `${diffColors[diff.id]}14` : 'var(--bg-secondary)',
                         border: active ? `1.5px solid ${diffColors[diff.id]}` : '1px solid var(--border-secondary)',
-                        boxShadow: active ? `0 0 0 3px ${diffColors[diff.id]}12` : 'none',
+                        boxShadow: active ? `0 0 0 3px ${diffColors[diff.id]}18, 0 1px 3px ${diffColors[diff.id]}20` : 'none',
+                        transform: active ? 'scale(1.02)' : undefined,
                       }}>
-                      <span className="text-sm font-semibold transition-colors duration-200" style={{ color: active ? diffColors[diff.id] : 'var(--text-tertiary)' }}>{diff.label}</span>
-                      <span className="text-[10px]" style={{ color: active ? `${diffColors[diff.id]}aa` : 'var(--text-quaternary)' }}>{diff.desc}</span>
+                      <span className="text-sm font-semibold transition-colors duration-150" style={{ color: active ? diffColors[diff.id] : 'var(--text-tertiary)' }}>{diff.label}</span>
+                      <span className="text-[10px]" style={{ color: active ? `${diffColors[diff.id]}bb` : 'var(--text-quaternary)' }}>{diff.desc}</span>
                     </button>
                   )
                 })}
@@ -200,10 +202,10 @@ export default function SetupPanel({ onStart, onViewHistory }: SetupPanelProps) 
                   const active = topic === t.id
                   return (
                     <button key={t.id} onClick={() => setTopic(t.id)}
-                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all duration-200"
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all duration-150 hover:bg-[var(--bg-secondary)] active:scale-[0.98]"
                       style={{
-                        background: active ? 'rgba(130,80,223,0.06)' : 'transparent',
-                        border: active ? '1px solid rgba(130,80,223,0.3)' : '1px solid transparent',
+                        background: active ? 'rgba(130,80,223,0.08)' : 'transparent',
+                        border: active ? '1px solid rgba(130,80,223,0.35)' : '1px solid transparent',
                       }}>
                       <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all duration-200" style={{
                         background: active ? 'var(--accent-purple)' : 'var(--border-primary)',
